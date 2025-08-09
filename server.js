@@ -1,8 +1,13 @@
 // server.js (or api.js)
-const express = require('express');
-const { google } = require('googleapis');
+// server.js
+import express from 'express';
+import { google } from 'googleapis';
+
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// rest of your code ...
+
 
 // Configure Google Drive API auth (use service account or OAuth)
 // This is simplified, you'll need credentials JSON and setup
