@@ -1,0 +1,130 @@
+<!-- public/admin.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CarParts Admin</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; padding: 20px; max-width: 900px; margin: auto; }
+    input, textarea { width: 100%; padding: 8px; margin: 6px 0; box-sizing: border-box; }
+    .part { border: 1px solid #ddd; padding: 10px; margin: 10px 0; display:flex; gap:10px; align-items:center; }
+    img { width: 120px; object-fit: cover; }
+    button { padding:6px 10px; cursor:pointer; }
+    .topbar { display:flex; gap:10px; align-items:center; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>CarParts — Admin</h1>
+    <div>
+      <a href="/auth/google"><button id="signin">Sign in with Google</button></a>
+      <a href="/logout"><button id="logout">Logout</button></a>
+    </div>
+  </div>
+
+  <section>
+    <h2>Upload new part</h2>
+    <form id="uploadForm">
+      <label>Part name</label>
+      <input name="partName" id="partName" placeholder="e.g., CAR DOOR" required>
+      <label>Details (plain text)</label>
+      <textarea id="details" rows="4"></textarea>
+      <label>Image</label>
+      <input type="file" id="image" accept="image/*">
+      <div style="margin-top:10px;">
+        <button type="submit">Upload Part</button>
+      </div>
+    </form>
+  </section>
+
+  <section>
+    <h2>Existing parts</h2>
+    <div id="partsList">Loading...</div>
+  </section>
+
+  <script>
+    async function fetchParts() {
+      const list = document.getElementById('partsList');
+      list.innerHTML = 'Loading...';
+      try {
+        const res = await fetch('/api/parts');
+        if (res.status === 401) {
+          list.innerHTML = '<em>Sign in to manage parts.</em>';
+          return;
+        }
+        const parts = await res.json();
+        if (!Array.isArray(parts) || parts.length === 0) {
+          list.innerHTML = '<em>No parts found.</em>';
+          return;
+        }
+        list.innerHTML = '';
+        parts.forEach(p => {
+          const div = document.createElement('div');
+          div.className = 'part';
+          div.innerHTML = `
+            <div style="flex:1">
+              <h3>${p.name}</h3>
+              <p style="white-space:pre-wrap">${p.details || ''}</p>
+            </div>
+            <div style="width:140px; text-align:center">
+              ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : '<div style="width:120px;height:80px;background:#eee;display:flex;align-items:center;justify-content:center">no image</div>'}
+              <div style="margin-top:8px;">
+                <button data-id="${p.id}" class="deleteBtn">Delete</button>
+              </div>
+            </div>
+          `;
+          list.appendChild(div);
+        });
+
+        document.querySelectorAll('.deleteBtn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            if (!confirm('Move this folder to Trash?')) return;
+            const folderId = e.target.dataset.id;
+            const r = await fetch('/api/delete', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ folderId })
+            });
+            const j = await r.json();
+            if (j.success) fetchParts();
+            else alert('Delete failed: ' + (j.error || JSON.stringify(j)));
+          });
+        });
+
+      } catch (err) {
+        list.innerHTML = 'Error loading parts: ' + err.message;
+      }
+    }
+
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const partName = document.getElementById('partName').value.trim();
+      const details = document.getElementById('details').value;
+      const imageInput = document.getElementById('image');
+      if (!partName) return alert('Part name required');
+
+      const form = new FormData();
+      form.append('partName', partName);
+      form.append('details', details);
+      if (imageInput.files[0]) form.append('image', imageInput.files[0]);
+
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: form });
+        const j = await res.json();
+        if (j.success) {
+          alert('Uploaded');
+          document.getElementById('uploadForm').reset();
+          fetchParts();
+        } else {
+          alert('Upload failed: ' + (j.error || JSON.stringify(j)));
+        }
+      } catch (err) {
+        alert('Upload error: ' + err.message);
+      }
+    });
+
+    // initial load
+    fetchParts();
+  </script>
+</body>
+</html>
