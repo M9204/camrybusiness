@@ -20,7 +20,7 @@
     let cart = [];
 
     async function loadItems() {
-      const res = await fetch('https://YOUR_RENDER_SERVER/api/parts');
+      const res = await fetch('https://camrybusiness.onrender.com/api/parts');
       const parts = await res.json();
       const container = document.getElementById('items');
       parts.forEach(p => {
