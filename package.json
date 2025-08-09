@@ -1,14 +1,17 @@
 {
-  "name": "carparts-backend",
+  "name": "carparts-admin",
   "version": "1.0.0",
   "type": "module",
-  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
+    "body-parser": "^1.20.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
     "express": "^4.18.2",
-    "googleapis": "^144.0.0"
+    "express-session": "^1.17.3",
+    "googleapis": "^114.0.0",
+    "multer": "^1.4.5"
   }
 }
