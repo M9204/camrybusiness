@@ -1,60 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Camry Business</title>
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2/dist/email.min.js"></script>
-  <style>
-    body { font-family: Arial; }
-    .item { border: 1px solid #ccc; padding: 10px; margin: 10px; display: inline-block; width: 200px; }
-    img { width: 100%; }
-  </style>
+<meta charset="UTF-8" />
+<title>Camry Business - Car Parts</title>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<style>
+  .part { border: 1px solid #ddd; padding: 10px; margin: 10px; display: inline-block; width: 200px; }
+  .part img { max-width: 100%; height: auto; }
+  .cart-item { margin-bottom: 5px; }
+</style>
 </head>
 <body>
-  <h1>Camry Business</h1>
-  <div id="items"></div>
-  <button onclick="checkout()">Checkout</button>
 
-  <script>
-    emailjs.init("KL9tzTpfIKMZOOfGi");
+<h1>Camry Business - Car Parts</h1>
 
-    let cart = [];
+<div id="parts"></div>
 
-    async function loadItems() {
-      const res = await fetch('https://camrybusiness.onrender.com/api/parts');
-      const parts = await res.json();
-      const container = document.getElementById('items');
-      parts.forEach(p => {
-        const div = document.createElement('div');
-        div.className = 'item';
-        div.innerHTML = `
-          <img src="${p.image}" alt="${p.name}">
-          <h3>${p.name}</h3>
-          <p>${p.details}</p>
-          <button onclick="addToCart('${p.name}')">Add to Cart</button>
-        `;
-        container.appendChild(div);
-      });
-    }
+<h2>Cart</h2>
+<div id="cart"></div>
+<button onclick="sendOrder()">Send Order</button>
 
-    function addToCart(name) {
-      const item = cart.find(c => c.name === name);
-      if (item) item.quantity++;
-      else cart.push({ name, quantity: 1 });
-      alert(name + " added to cart!");
-    }
+<script>
+emailjs.init('KL9tzTpfIKMZOOfGi');
 
-    function checkout() {
-      const itemsStr = cart.map(c => `${c.name} x ${c.quantity}`).join('\n');
-      emailjs.send("service_ezl7f8j", "template_9mrozeg", {
-        items: itemsStr,
-        quantity: cart.reduce((sum, i) => sum + i.quantity, 0)
-      }).then(() => {
-        alert("Order sent!");
-        cart = [];
-      });
-    }
+let cart = {};
 
-    loadItems();
-  </script>
+async function loadParts() {
+  const res = await fetch('/api/parts');
+  const parts = await res.json();
+
+  const partsDiv = document.getElementById('parts');
+  partsDiv.innerHTML = '';
+
+  parts.forEach(part => {
+    const div = document.createElement('div');
+    div.className = 'part';
+    div.innerHTML = `
+      <h3>${part.name}</h3>
+      ${part.imageUrl ? `<img src="${part.imageUrl}" alt="${part.name}"/>` : ''}
+      <p>${part.details}</p>
+      Quantity: <input type="number" min="1" value="1" id="qty-${part.name}" />
+      <button onclick="addToCart('${part.name}')">Add to Cart</button>
+    `;
+    partsDiv.appendChild(div);
+  });
+}
+
+function addToCart(name) {
+  const qtyInput = document.getElementById(`qty-${name}`);
+  const quantity = parseInt(qtyInput.value);
+  if (quantity > 0) {
+    cart[name] = (cart[name] || 0) + quantity;
+    renderCart();
+  }
+}
+
+function renderCart() {
+  const cartDiv = document.getElementById('cart');
+  cartDiv.innerHTML = '';
+  for (const [item, qty] of Object.entries(cart)) {
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.textContent = `${item} - Quantity: ${qty}`;
+    cartDiv.appendChild(div);
+  }
+}
+
+function sendOrder() {
+  if (Object.keys(cart).length === 0) {
+    alert('Cart is empty!');
+    return;
+  }
+  const items = Object.entries(cart).map(([item, qty]) => `${item}: ${qty}`).join('\n');
+
+  emailjs.send('service_ezl7f8j', 'template_9mrozeg', {
+    items,
+    quantity: Object.values(cart).reduce((a,b) => a+b, 0)
+  }).then(() => {
+    alert('Order sent successfully!');
+    cart = {};
+    renderCart();
+  }, (err) => {
+    alert('Failed to send order. ' + JSON.stringify(err));
+  });
+}
+
+loadParts();
+</script>
+
 </body>
 </html>
