@@ -39,21 +39,58 @@
     font-family: "Roboto", "Google Sans", Arial, sans-serif; z-index: 9999;
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   }
-  @media (max-width: 480px) {
-    #cartList li { font-size: 14px; padding: 10px 15px; }
-    .gs-button { font-size: 14px; padding: 8px 20px; }
-    .item-controls button { padding: 4px 8px; font-size: 14px; }
+  /* Modal styles */
+  .modal {
+    display: none; position: fixed; z-index: 10000; left: 0; top: 0;
+    width: 100%; height: 100%; overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+  }
+  .modal-content {
+    background-color: #fff; margin: 15% auto; padding: 20px;
+    border-radius: 12px; width: 90%; max-width: 400px; text-align: left;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  .modal-content h2 {
+    margin-top: 0; color: #333;
+  }
+  .modal-content label {
+    display: block; margin: 10px 0 5px; font-weight: bold;
+  }
+  .modal-content input {
+    width: 100%; padding: 8px; border: 1px solid #ccc;
+    border-radius: 6px; font-size: 14px;
+  }
+  .modal-actions {
+    margin-top: 15px; text-align: right;
+  }
+  .modal-actions button {
+    margin-left: 10px;
   }
 </style>
 </head>
 <body>
-<h1> Cart</h1>
+<h1>Cart</h1>
 <div id="totalQty">Total Items: 0</div>
 <ul id="cartList"></ul>
 
 <div class="cart-buttons">
   <button class="gs-button" onclick="clearCart()">Clear Cart</button>
-  <button class="gs-button" onclick="checkout()">Checkout</button>
+  <button class="gs-button" onclick="openCheckoutForm()">Checkout</button>
+</div>
+
+<!-- Modal -->
+<div id="checkoutModal" class="modal">
+  <div class="modal-content">
+    <h2>Checkout Information</h2>
+    <label for="nameInput">Name:</label>
+    <input type="text" id="nameInput" placeholder="Your name">
+    <label for="phoneInput">Phone Number:</label>
+    <input type="text" id="phoneInput" placeholder="Your phone number">
+    <div class="modal-actions">
+      <button class="gs-button" onclick="closeCheckoutForm()">Cancel</button>
+      <button class="gs-button" onclick="checkout()">Submit</button>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
@@ -64,7 +101,6 @@
 
 let cart = JSON.parse(localStorage.getItem('cart')) || {};
 
-// Add item from URL if present
 const urlParams = new URLSearchParams(window.location.search);
 const newItem = urlParams.get('item');
 if (newItem) {
@@ -114,34 +150,35 @@ function updateCart() {
 
 function clearCart() { cart = {}; updateCart(); }
 
-function checkout() {
+function openCheckoutForm() {
   if (Object.keys(cart).length === 0) {
     showToast("Your cart is empty!");
     return;
   }
+  document.getElementById('checkoutModal').style.display = 'block';
+}
 
-  // Ask user for name and phone
-  let userName = prompt("Please enter your name:");
-  if (!userName) {
-    showToast("Name is required!");
+function closeCheckoutForm() {
+  document.getElementById('checkoutModal').style.display = 'none';
+}
+
+function checkout() {
+  const name = document.getElementById('nameInput').value.trim();
+  const phone = document.getElementById('phoneInput').value.trim();
+
+  if (!name || !phone) {
+    showToast("Please fill in all fields!");
     return;
   }
-  
-  let userPhone = prompt("Please enter your phone number:");
-  if (!userPhone) {
-    showToast("Phone number is required!");
-    return;
-  }
 
-  // Build cart summary
   let cartSummary = "";
   for (let item in cart) {
     cartSummary += `${item} x ${cart[item]}\n`;
   }
 
   const templateParams = {
-    name: userName,
-    phone: userPhone,
+    name: name,
+    phone: phone,
     items: cartSummary,
     email: "cloudyskyqa@gmail.com"
   };
@@ -149,8 +186,9 @@ function checkout() {
   emailjs.send("service_bgfjjx9", "template_nt9d7cm", templateParams)
     .then(function(response) {
         console.log("SUCCESS!", response.status, response.text);
-        showToast("Ordered successfully!");
+        showToast("Email sent successfully!");
         clearCart();
+        closeCheckoutForm();
     }, function(error) {
         console.error("FAILED...", error);
         showToast("Failed to send email");
