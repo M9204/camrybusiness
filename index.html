@@ -1,159 +1,242 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Cart</title>
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  (function(){
+    emailjs.init("KL9tzTpfIKMZOOfGi"); // Public Key
+  })();
+</script>
 <style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-}
-button {
-  padding: 8px 12px;
-  margin: 4px;
-  font-size: 16px;
-  border: none;
-  cursor: pointer;
-}
-#cart {
-  border-top: 2px solid #ccc;
-  padding: 10px;
-}
-.cart-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 8px 0;
-  padding: 8px;
-  border: 1px solid #ddd;
-}
-.qty-btn {
-  padding: 4px 8px;
-  background: #007bff;
-  color: white;
-  border-radius: 4px;
-}
-.remove-btn {
-  padding: 4px 8px;
-  background: red;
-  color: white;
-  border-radius: 4px;
-}
-#total {
-  font-weight: bold;
-  margin-top: 10px;
-}
-#checkoutForm {
-  display: none;
-  margin-top: 15px;
-}
-input {
-  padding: 6px;
-  width: 80%;
-  margin-top: 10px;
-}
+  body {
+    font-family: "Roboto", "Google Sans", Arial, sans-serif;
+    background: #f1f3f4;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+  }
+
+  h1 { font-size: 24px; color: #333; margin-bottom: 10px; }
+
+  #totalQty {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #555;
+  }
+
+  #cartList {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto 20px auto;
+    max-width: 500px;
+    text-align: left;
+  }
+
+  #cartList li {
+    background: #fff;
+    border-radius: 12px;
+    margin: 10px 0;
+    padding: 12px 20px;
+    font-size: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .item-controls button {
+    margin: 0 5px;
+    border: none;
+    border-radius: 12px;
+    padding: 5px 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .plus { background-color: #1a73e8; color: #fff; }
+  .minus { background-color: #666; color: #fff; }
+  .remove { background-color: #e53935; color: #fff; }
+
+  .cart-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+  }
+
+  .gs-button {
+    font-family: "Roboto", "Google Sans", Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #fff;
+    background-color: #1a73e8; 
+    border: none;
+    border-radius: 24px;
+    padding: 10px 24px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+  }
+
+  .gs-button:hover { background-color: #1669c1; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+  .gs-button:active { background-color: #145ab8; transform: scale(0.98); }
+
+  /* Checkout Form Modal */
+  #checkoutForm {
+    display: none;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    max-width: 400px;
+    margin: 20px auto;
+    text-align: left;
+  }
+  #checkoutForm input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a73e8;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-family: "Roboto", "Google Sans", Arial, sans-serif;
+    z-index: 9999;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  @media (max-width: 480px) {
+    #cartList li { font-size: 14px; padding: 10px 15px; }
+    .gs-button { font-size: 14px; padding: 8px 20px; }
+    .item-controls button { padding: 4px 8px; font-size: 14px; }
+  }
 </style>
 </head>
 <body>
+  <h1>🛒 My Cart</h1>
+  <div id="totalQty">Total Items: 0</div>
+  <ul id="cartList"></ul>
 
-<h2>Car Parts Store</h2>
-
-<!-- Example items -->
-<div>
-  <button onclick="addToCart('Car Door')">Add Car Door</button>
-  <button onclick="addToCart('AC Vent')">Add AC Vent</button>
-</div>
-
-<div id="cart">
-  <h3>Cart</h3>
-  <div id="cartItems"></div>
-  <div id="total">Total Quantity: 0</div>
-  <button onclick="showCheckoutForm()" style="background:green;color:white;">Checkout</button>
-
-  <!-- Checkout form -->
-  <div id="checkoutForm">
-    <h4>Enter Phone Number</h4>
-    <input type="text" id="phoneNumber" placeholder="Phone Number"><br>
-    <button style="background:blue;color:white;" onclick="sendEmail()">Confirm Order</button>
+  <div class="cart-buttons">
+    <button class="gs-button" onclick="clearCart()">Clear Cart</button>
+    <button class="gs-button" onclick="showCheckoutForm()">Checkout</button>
   </div>
-</div>
+
+  <!-- Checkout Form -->
+  <div id="checkoutForm">
+    <h3>Enter your phone number</h3>
+    <input type="tel" id="phoneNumber" placeholder="Phone Number" required>
+    <button class="gs-button" onclick="sendOrder()">Submit Order</button>
+  </div>
 
 <script>
-emailjs.init("KL9tzTpfIKMZOOfGi");
+let cart = JSON.parse(localStorage.getItem('cart')) || {};
 
-let cart = {};
-
-function addToCart(item) {
-  if (cart[item]) {
-    cart[item]++;
-  } else {
-    cart[item] = 1;
-  }
-  renderCart();
+const urlParams = new URLSearchParams(window.location.search);
+const newItem = urlParams.get('item');
+if (newItem) {
+  if (cart[newItem]) cart[newItem] += 1;
+  else cart[newItem] = 1;
+  localStorage.setItem('cart', JSON.stringify(cart));
+  showToast(newItem + " added to cart");
 }
 
-function changeQty(item, amount) {
-  cart[item] += amount;
-  if (cart[item] <= 0) {
-    delete cart[item];
-  }
-  renderCart();
-}
-
-function removeItem(item) {
-  delete cart[item];
-  renderCart();
-}
+const cartList = document.getElementById('cartList');
+const totalQtyDiv = document.getElementById('totalQty');
 
 function renderCart() {
-  const cartItemsDiv = document.getElementById('cartItems');
-  cartItemsDiv.innerHTML = '';
-  let totalQty = 0;
-
-  for (let item in cart) {
-    totalQty += cart[item];
-    cartItemsDiv.innerHTML += `
-      <div class="cart-item">
-        <span>${item} (x${cart[item]})</span>
-        <div>
-          <button class="qty-btn" onclick="changeQty('${item}', 1)">+</button>
-          <button class="qty-btn" onclick="changeQty('${item}', -1)">-</button>
-          <button class="remove-btn" onclick="removeItem('${item}')">Remove</button>
-        </div>
-      </div>
-    `;
-  }
-  document.getElementById('total').innerText = "Total Quantity: " + totalQty;
-}
-
-function showCheckoutForm() {
-  document.getElementById('checkoutForm').style.display = 'block';
-}
-
-function sendEmail() {
-  const phone = document.getElementById('phoneNumber').value;
-  if (!phone) {
-    alert("Please enter your phone number.");
+  const keys = Object.keys(cart);
+  if (keys.length === 0) {
+    cartList.innerHTML = "<li>Cart is empty</li>";
+    totalQtyDiv.textContent = "Total Items: 0";
     return;
   }
 
-  let itemsList = Object.keys(cart).map(item => `${item} (x${cart[item]})`).join(", ");
-  let qtyList = Object.values(cart).join(", ");
+  cartList.innerHTML = keys.map(item => 
+    `<li>
+      <span>${item} x ${cart[item]}</span>
+      <span class="item-controls">
+        <button class="minus" onclick="decrease('${item}')">−</button>
+        <button class="plus" onclick="increase('${item}')">+</button>
+        <button class="remove" onclick="removeItem('${item}')">Remove</button>
+      </span>
+    </li>`).join('');
+
+  const totalQty = keys.reduce((sum, k) => sum + cart[k], 0);
+  totalQtyDiv.textContent = "Total Items: " + totalQty;
+}
+
+function increase(item) { cart[item] += 1; updateCart(); }
+function decrease(item) { 
+  if (cart[item] > 1) cart[item] -= 1; 
+  else delete cart[item];
+  updateCart(); 
+}
+function removeItem(item) { delete cart[item]; updateCart(); }
+
+function updateCart() {
+  localStorage.setItem('cart', JSON.stringify(cart));
+  renderCart();
+}
+
+function clearCart() { cart = {}; updateCart(); }
+
+function showCheckoutForm() {
+  if (Object.keys(cart).length === 0) {
+    showToast("Your cart is empty");
+    return;
+  }
+  document.getElementById('checkoutForm').style.display = 'block';
+}
+
+function sendOrder() {
+  const phone = document.getElementById('phoneNumber').value.trim();
+  if (!phone) {
+    showToast("Please enter your phone number");
+    return;
+  }
+
+  const itemsList = Object.keys(cart).map(item => `${item} x ${cart[item]}`).join("\n");
+  const quantities = Object.values(cart).reduce((a,b) => a + b, 0);
 
   emailjs.send("service_ezl7f8j", "template_9mrozeg", {
     items: itemsList,
-    quantity: qtyList,
+    quantity: quantities,
+    phone: phone,
+    to_email: "cloudyskyqa@gmail.com"
   }).then(() => {
-    alert("Order sent successfully!");
-    cart = {};
-    renderCart();
+    showToast("Order sent successfully!");
+    clearCart();
     document.getElementById('checkoutForm').style.display = 'none';
-  }).catch(err => {
-    alert("Error sending order: " + JSON.stringify(err));
+  }).catch(() => {
+    showToast("Failed to send order");
   });
 }
+
+function showToast(msgText) {
+  const msg = document.createElement('div');
+  msg.className = 'toast';
+  msg.textContent = msgText;
+  document.body.appendChild(msg);
+  setTimeout(() => msg.remove(), 2000);
+}
+
+renderCart();
 </script>
 </body>
 </html>
