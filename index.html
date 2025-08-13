@@ -1,123 +1,160 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Cart Checkout with EmailJS</title>
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; }
-    .cart { max-width: 400px; margin: auto; padding: 10px; border: 1px solid #ccc; border-radius: 10px; }
-    .cart-item { display: flex; justify-content: space-between; align-items: center; margin: 5px 0; }
-    .qty-controls button { margin: 0 3px; }
-    .remove-btn { background: red; color: white; border: none; padding: 4px 8px; border-radius: 5px; cursor: pointer; }
-    .checkout-form { display: none; margin-top: 15px; }
-    input { width: 100%; padding: 8px; margin-bottom: 10px; }
-    button { padding: 8px 12px; }
-    .checkout-btn { display: block; margin: 15px auto; }
-  </style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+button {
+  padding: 8px 12px;
+  margin: 4px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+#cart {
+  border-top: 2px solid #ccc;
+  padding: 10px;
+}
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+.qty-btn {
+  padding: 4px 8px;
+  background: #007bff;
+  color: white;
+  border-radius: 4px;
+}
+.remove-btn {
+  padding: 4px 8px;
+  background: red;
+  color: white;
+  border-radius: 4px;
+}
+#total {
+  font-weight: bold;
+  margin-top: 10px;
+}
+#checkoutForm {
+  display: none;
+  margin-top: 15px;
+}
+input {
+  padding: 6px;
+  width: 80%;
+  margin-top: 10px;
+}
+</style>
 </head>
 <body>
 
-<div class="cart">
-  <h2>🛒 Your Cart</h2>
-  <div id="cart-items"></div>
-  <p id="total">Total: 0</p>
-  <p id="total-qty">Total Quantity: 0</p>
-  <button class="checkout-btn" onclick="showCheckoutForm()">Checkout</button>
+<h2>Car Parts Store</h2>
 
-  <form id="checkout-form" class="checkout-form" onsubmit="sendEmail(event)">
-    <input type="email" id="user-email" placeholder="Enter your email" required>
-    <input type="tel" id="user-phone" placeholder="Enter your phone" required>
-    <button type="submit">Send Order</button>
-  </form>
+<!-- Example items -->
+<div>
+  <button onclick="addToCart('Car Door')">Add Car Door</button>
+  <button onclick="addToCart('AC Vent')">Add AC Vent</button>
+</div>
+
+<div id="cart">
+  <h3>Cart</h3>
+  <div id="cartItems"></div>
+  <div id="total">Total Quantity: 0</div>
+  <button onclick="showCheckoutForm()" style="background:green;color:white;">Checkout</button>
+
+  <!-- Checkout form -->
+  <div id="checkoutForm">
+    <h4>Enter Phone Number</h4>
+    <input type="text" id="phoneNumber" placeholder="Phone Number"><br>
+    <button style="background:blue;color:white;" onclick="sendEmail()">Confirm Order</button>
+  </div>
 </div>
 
 <script>
-  emailjs.init("KL9tzTpfIKMZOOfGi");
+emailjs.init("KL9tzTpfIKMZOOfGi");
 
-  let cart = {};
+let cart = {};
 
-  function addItem(name, price) {
-    if (!cart[name]) {
-      cart[name] = { price: price, quantity: 1 };
-    } else {
-      cart[name].quantity++;
-    }
-    renderCart();
+function addToCart(item) {
+  if (cart[item]) {
+    cart[item]++;
+  } else {
+    cart[item] = 1;
   }
+  renderCart();
+}
 
-  function updateQty(name, change) {
-    if (cart[name]) {
-      cart[name].quantity += change;
-      if (cart[name].quantity <= 0) {
-        delete cart[name];
-      }
-      renderCart();
-    }
+function changeQty(item, amount) {
+  cart[item] += amount;
+  if (cart[item] <= 0) {
+    delete cart[item];
   }
+  renderCart();
+}
 
-  function removeItem(name) {
-    delete cart[name];
-    renderCart();
-  }
+function removeItem(item) {
+  delete cart[item];
+  renderCart();
+}
 
-  function renderCart() {
-    let cartContainer = document.getElementById("cart-items");
-    let total = 0;
-    let totalQty = 0;
-    cartContainer.innerHTML = "";
+function renderCart() {
+  const cartItemsDiv = document.getElementById('cartItems');
+  cartItemsDiv.innerHTML = '';
+  let totalQty = 0;
 
-    for (let name in cart) {
-      let item = cart[name];
-      total += item.price * item.quantity;
-      totalQty += item.quantity;
-
-      cartContainer.innerHTML += `
-        <div class="cart-item">
-          <span>${name} x ${item.quantity}</span>
-          <div class="qty-controls">
-            <button onclick="updateQty('${name}', 1)">+</button>
-            <button onclick="updateQty('${name}', -1)">-</button>
-            <button class="remove-btn" onclick="removeItem('${name}')">Remove</button>
-          </div>
+  for (let item in cart) {
+    totalQty += cart[item];
+    cartItemsDiv.innerHTML += `
+      <div class="cart-item">
+        <span>${item} (x${cart[item]})</span>
+        <div>
+          <button class="qty-btn" onclick="changeQty('${item}', 1)">+</button>
+          <button class="qty-btn" onclick="changeQty('${item}', -1)">-</button>
+          <button class="remove-btn" onclick="removeItem('${item}')">Remove</button>
         </div>
-      `;
-    }
+      </div>
+    `;
+  }
+  document.getElementById('total').innerText = "Total Quantity: " + totalQty;
+}
 
-    document.getElementById("total").textContent = "Total: $" + total;
-    document.getElementById("total-qty").textContent = "Total Quantity: " + totalQty;
+function showCheckoutForm() {
+  document.getElementById('checkoutForm').style.display = 'block';
+}
+
+function sendEmail() {
+  const phone = document.getElementById('phoneNumber').value;
+  if (!phone) {
+    alert("Please enter your phone number.");
+    return;
   }
 
-  function showCheckoutForm() {
-    document.getElementById("checkout-form").style.display = "block";
-  }
+  let itemsList = Object.keys(cart).map(item => `${item} (x${cart[item]})`).join(", ");
+  let qtyList = Object.values(cart).join(", ");
 
-  function sendEmail(event) {
-    event.preventDefault();
-
-    let email = document.getElementById("user-email").value;
-    let phone = document.getElementById("user-phone").value;
-
-    let items = Object.keys(cart).map(name => `${name} x ${cart[name].quantity}`).join(", ");
-    let quantities = Object.values(cart).map(item => item.quantity).reduce((a, b) => a + b, 0);
-
-    emailjs.send("service_ezl7f8j", "template_9mrozeg", {
-      items: items,
-      quantity: quantities
-    }).then(() => {
-      alert("✅ Order sent successfully!");
-      cart = {};
-      renderCart();
-      document.getElementById("checkout-form").style.display = "none";
-    }).catch(err => {
-      console.error(err);
-      alert("❌ Failed to send order");
-    });
-  }
-
-  // Example test items
-  addItem("Car Door", 150);
-  addItem("Car Light", 75);
+  emailjs.send("service_ezl7f8j", "template_9mrozeg", {
+    items: itemsList,
+    quantity: qtyList,
+    phone: phone
+  }).then(() => {
+    alert("Order sent successfully!");
+    cart = {};
+    renderCart();
+    document.getElementById('checkoutForm').style.display = 'none';
+  }).catch(err => {
+    alert("Error sending order: " + JSON.stringify(err));
+  });
+}
 </script>
-
 </body>
 </html>
