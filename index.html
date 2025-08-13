@@ -101,8 +101,6 @@
     let quantities = Object.values(cart).map(item => item.quantity).reduce((a, b) => a + b, 0);
 
     emailjs.send("service_id", "template_9mrozeg", {
-      email: email,
-      phone: phone,
       items: items,
       quantity: quantities
     }).then(() => {
