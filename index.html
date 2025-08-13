@@ -8,13 +8,15 @@
     h1 { color: #333; }
     ul { list-style: none; padding: 0; }
     li { padding: 10px; border-bottom: 1px solid #ccc; }
-    button { padding: 10px 15px; background: red; color: white; border: none; cursor: pointer; }
+    button { padding: 10px 15px; margin: 5px; background: red; color: white; border: none; cursor: pointer; }
+    button.checkout { background: green; }
   </style>
 </head>
 <body>
   <h1>🛒 My Cart</h1>
   <ul id="cartList"></ul>
   <button onclick="clearCart()">Clear Cart</button>
+  <button class="checkout" onclick="checkout()">Checkout</button>
 
   <script>
     // Get URL params
@@ -41,7 +43,25 @@
     // Clear cart function
     function clearCart() {
       localStorage.removeItem('cart');
-      location.href = 'cart.html';
+      location.href = 'index.html';
+    }
+
+    // Checkout function - download cart as text file
+    function checkout() {
+      if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+      const textContent = "My Cart Items:\n\n" + cart.join("\n");
+      const blob = new Blob([textContent], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "cart_items.txt";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
   </script>
 </body>
