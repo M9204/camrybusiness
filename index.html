@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>My Cart</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 30px; }
+    h1 { color: #333; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 10px; border-bottom: 1px solid #ccc; }
+    button { padding: 10px 15px; background: red; color: white; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>🛒 My Cart</h1>
+  <ul id="cartList"></ul>
+  <button onclick="clearCart()">Clear Cart</button>
+
+  <script>
+    // Get URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const newItem = urlParams.get('item');
+
+    // Load cart from localStorage or empty array
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    // If new item exists, add to cart
+    if (newItem) {
+      cart.push(newItem);
+      localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    // Display cart
+    const cartList = document.getElementById('cartList');
+    if (cart.length === 0) {
+      cartList.innerHTML = "<li>Cart is empty</li>";
+    } else {
+      cartList.innerHTML = cart.map(item => `<li>${item}</li>`).join('');
+    }
+
+    // Clear cart function
+    function clearCart() {
+      localStorage.removeItem('cart');
+      location.href = 'cart.html';
+    }
+  </script>
+</body>
+</html>
