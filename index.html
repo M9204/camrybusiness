@@ -12,91 +12,33 @@
     padding: 20px;
     text-align: center;
   }
-
-  h1 {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 10px;
-  }
-
-  #totalQty {
-    font-size: 18px;
-    margin-bottom: 20px;
-    color: #555;
-  }
-
-  #cartList {
-    list-style: none;
-    padding: 0;
-    margin: 0 auto 20px auto;
-    max-width: 500px;
-    text-align: left;
-  }
-
+  h1 { font-size: 24px; color: #333; margin-bottom: 10px; }
+  #totalQty { font-size: 18px; margin-bottom: 20px; color: #555; }
+  #cartList { list-style: none; padding: 0; margin: 0 auto 20px auto; max-width: 500px; text-align: left; }
   #cartList li {
-    background: #fff;
-    border-radius: 12px;
-    margin: 10px 0;
-    padding: 12px 20px;
-    font-size: 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    background: #fff; border-radius: 12px; margin: 10px 0; padding: 12px 20px;
+    font-size: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex; justify-content: space-between; align-items: center;
   }
-
-  .item-controls button {
-    margin: 0 5px;
-    border: none;
-    border-radius: 12px;
-    padding: 5px 10px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
+  .item-controls button { margin: 0 5px; border: none; border-radius: 12px; padding: 5px 10px; font-weight: bold; cursor: pointer; }
   .plus { background-color: #1a73e8; color: #fff; }
   .minus { background-color: #666; color: #fff; }
   .remove { background-color: #e53935; color: #fff; }
-
-  .cart-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 30px;
-  }
-
+  .cart-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 30px; }
   .gs-button {
     font-family: "Roboto", "Google Sans", Arial, sans-serif;
-    font-size: 16px;
-    font-weight: 500;
-    color: #fff;
-    background-color: #1a73e8; 
-    border: none;
-    border-radius: 24px;
-    padding: 10px 24px;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    font-size: 16px; font-weight: 500; color: #fff; background-color: #1a73e8; border: none; border-radius: 24px;
+    padding: 10px 24px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
   }
-
   .gs-button:hover { background-color: #1669c1; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
   .gs-button:active { background-color: #145ab8; transform: scale(0.98); }
-
   .toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1a73e8;
-    color: #fff;
-    padding: 10px 15px;
-    border-radius: 20px;
-    font-family: "Roboto", "Google Sans", Arial, sans-serif;
-    z-index: 9999;
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: #1a73e8; color: #fff; padding: 10px 15px; border-radius: 20px;
+    font-family: "Roboto", "Google Sans", Arial, sans-serif; z-index: 9999;
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   }
-
   @media (max-width: 480px) {
     #cartList li { font-size: 14px; padding: 10px 15px; }
     .gs-button { font-size: 14px; padding: 8px 20px; }
@@ -105,55 +47,24 @@
 </style>
 </head>
 <body>
-  <h1>🛒 My Cart</h1>
-  <div id="totalQty">Total Items: 0</div>
-  <ul id="cartList"></ul>
+<h1>🛒 Cart</h1>
+<div id="totalQty">Total Items: 0</div>
+<ul id="cartList"></ul>
 
-  <div class="cart-buttons">
-    <button class="gs-button" onclick="clearCart()">Clear Cart</button>
-    <button class="gs-button" onclick="checkout()">Checkout</button>
-  </div>
+<div class="cart-buttons">
+  <button class="gs-button" onclick="clearCart()">Clear Cart</button>
+  <button class="gs-button" onclick="checkout()">Checkout</button>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
 (function(){
-    emailjs.init("KL9tzTpfIKMZOOfGi"); // Public user ID
+  emailjs.init("KL9tzTpfIKMZOOfGi"); // Public user ID
 })();
 
-function checkout() {
-    if (Object.keys(cart).length === 0) {
-        showToast("Your cart is empty!");
-        return;
-    }
-
-    // Prepare the cart details
-    let items = [];
-    let quantities = [];
-    for (let item in cart) {
-        items.push(item);
-        quantities.push(cart[item]);
-    }
-
-    const templateParams = {
-        items: items.join(", "),           // e.g., "Apple, Banana, Orange"
-        quantity: quantities.join(", "),   // e.g., "2, 1, 3"
-        email: "cloudyskyqa@gmail.com"     // recipient email
-    };
-
-    emailjs.send("template_58g6y6s", "template_9mrozeg", templateParams)
-        .then(function(response) {
-            console.log("SUCCESS!", response.status, response.text);
-            showToast("Email sent successfully!");
-            clearCart();
-        }, function(error) {
-            console.error("FAILED...", error);
-            showToast("Failed to send email");
-        });
-}
-</script>
-
-<script>
 let cart = JSON.parse(localStorage.getItem('cart')) || {};
 
+// Add item from URL if present
 const urlParams = new URLSearchParams(window.location.search);
 const newItem = urlParams.get('item');
 if (newItem) {
@@ -202,23 +113,34 @@ function updateCart() {
 }
 
 function clearCart() { cart = {}; updateCart(); }
-/*
+
 function checkout() {
-  if (Object.keys(cart).length === 0) return;
-  let text = "My Cart Summary:\n\n";
-  for (let item in cart) text += `${item} x ${cart[item]}\n`;
-  const blob = new Blob([text], {type: "text/plain"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'cart_summary.txt';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}*/
+  if (Object.keys(cart).length === 0) {
+    showToast("Your cart is empty!");
+    return;
+  }
 
+  let cartSummary = "";
+  for (let item in cart) {
+    cartSummary += `${item} x ${cart[item]}\n`;
+  }
 
+  const templateParams = {
+    items: cartSummary,           // Full summary
+    quantity: "",                 // not needed separately
+    email: "cloudyskyqa@gmail.com"
+  };
+
+  emailjs.send("template_58g6y6s", "template_9mrozeg", templateParams)
+    .then(function(response) {
+        console.log("SUCCESS!", response.status, response.text);
+        showToast("Email sent successfully!");
+        clearCart();
+    }, function(error) {
+        console.error("FAILED...", error);
+        showToast("Failed to send email");
+    });
+}
 
 function showToast(msgText) {
   const msg = document.createElement('div');
