@@ -120,21 +120,36 @@ function checkout() {
     return;
   }
 
+  // Ask user for name and phone
+  let userName = prompt("Please enter your name:");
+  if (!userName) {
+    showToast("Name is required!");
+    return;
+  }
+  
+  let userPhone = prompt("Please enter your phone number:");
+  if (!userPhone) {
+    showToast("Phone number is required!");
+    return;
+  }
+
+  // Build cart summary
   let cartSummary = "";
   for (let item in cart) {
     cartSummary += `${item} x ${cart[item]}\n`;
   }
 
   const templateParams = {
-    items: cartSummary,           // Full summary
-    quantity: "",                 // not needed separately
+    name: userName,
+    phone: userPhone,
+    items: cartSummary,
     email: "cloudyskyqa@gmail.com"
   };
 
   emailjs.send("service_bgfjjx9", "template_nt9d7cm", templateParams)
     .then(function(response) {
         console.log("SUCCESS!", response.status, response.text);
-        showToast("Email sent successfully!");
+        showToast("Ordered successfully!");
         clearCart();
     }, function(error) {
         console.error("FAILED...", error);
