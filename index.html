@@ -145,7 +145,6 @@ function sendEmail() {
   emailjs.send("service_ezl7f8j", "template_9mrozeg", {
     items: itemsList,
     quantity: qtyList,
-    phone: phone
   }).then(() => {
     alert("Order sent successfully!");
     cart = {};
