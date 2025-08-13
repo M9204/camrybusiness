@@ -4,12 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Cart</title>
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-<script>
-  (function(){
-    emailjs.init("KL9tzTpfIKMZOOfGi"); // Public Key
-  })();
-</script>
 <style>
   body {
     font-family: "Roboto", "Google Sans", Arial, sans-serif;
@@ -19,7 +13,11 @@
     text-align: center;
   }
 
-  h1 { font-size: 24px; color: #333; margin-bottom: 10px; }
+  h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+  }
 
   #totalQty {
     font-size: 18px;
@@ -54,7 +52,6 @@
     padding: 5px 10px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.2s;
   }
 
   .plus { background-color: #1a73e8; color: #fff; }
@@ -86,26 +83,6 @@
   .gs-button:hover { background-color: #1669c1; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
   .gs-button:active { background-color: #145ab8; transform: scale(0.98); }
 
-  /* Checkout Form Modal */
-  #checkoutForm {
-    display: none;
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    max-width: 400px;
-    margin: 20px auto;
-    text-align: left;
-  }
-  #checkoutForm input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 16px;
-  }
-
   .toast {
     position: fixed;
     bottom: 20px;
@@ -134,14 +111,7 @@
 
   <div class="cart-buttons">
     <button class="gs-button" onclick="clearCart()">Clear Cart</button>
-    <button class="gs-button" onclick="showCheckoutForm()">Checkout</button>
-  </div>
-
-  <!-- Checkout Form -->
-  <div id="checkoutForm">
-    <h3>Enter your phone number</h3>
-    <input type="tel" id="phoneNumber" placeholder="Phone Number" required>
-    <button class="gs-button" onclick="sendOrder()">Submit Order</button>
+    <button class="gs-button" onclick="checkout()">Checkout</button>
   </div>
 
 <script>
@@ -196,36 +166,19 @@ function updateCart() {
 
 function clearCart() { cart = {}; updateCart(); }
 
-function showCheckoutForm() {
-  if (Object.keys(cart).length === 0) {
-    showToast("Your cart is empty");
-    return;
-  }
-  document.getElementById('checkoutForm').style.display = 'block';
-}
-
-function sendOrder() {
-  const phone = document.getElementById('phoneNumber').value.trim();
-  if (!phone) {
-    showToast("Please enter your phone number");
-    return;
-  }
-
-  const itemsList = Object.keys(cart).map(item => `${item} x ${cart[item]}`).join("\n");
-  const quantities = Object.values(cart).reduce((a,b) => a + b, 0);
-
-  emailjs.send("service_ezl7f8j", "template_9mrozeg", {
-    items: itemsList,
-    quantity: quantities,
-    phone: phone,
-    to_email: "cloudyskyqa@gmail.com"
-  }).then(() => {
-    showToast("Order sent successfully!");
-    clearCart();
-    document.getElementById('checkoutForm').style.display = 'none';
-  }).catch(() => {
-    showToast("Failed to send order");
-  });
+function checkout() {
+  if (Object.keys(cart).length === 0) return;
+  let text = "My Cart Summary:\n\n";
+  for (let item in cart) text += `${item} x ${cart[item]}\n`;
+  const blob = new Blob([text], {type: "text/plain"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'cart_summary.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function showToast(msgText) {
