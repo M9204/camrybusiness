@@ -1,40 +1,129 @@
 <!DOCTYPE html>
-<html>
-  
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Cart</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 30px; }
-    h1 { color: #333; }
-    ul { list-style: none; padding: 0; }
-    li { padding: 10px; border-bottom: 1px solid #ccc; }
-    button { padding: 10px 15px; margin: 5px; background: red; color: white; border: none; cursor: pointer; }
-    button.checkout { background: green; }
+    body {
+      font-family: "Roboto", "Google Sans", Arial, sans-serif;
+      background: #f1f3f4;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    #cartList {
+      list-style: none;
+      padding: 0;
+      margin: 0 auto 20px auto;
+      max-width: 500px;
+    }
+
+    #cartList li {
+      background: #fff;
+      border-radius: 12px;
+      margin: 10px 0;
+      padding: 12px 20px;
+      text-align: left;
+      font-size: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .cart-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .gs-button {
+      font-family: "Roboto", "Google Sans", Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: #fff;
+      background-color: #1a73e8; /* Google primary blue */
+      border: none;
+      border-radius: 24px;       /* rounded pill shape */
+      padding: 10px 24px;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+    }
+
+    .gs-button:hover {
+      background-color: #1669c1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .gs-button:active {
+      background-color: #145ab8;
+      transform: scale(0.98);
+    }
+
+    /* Toast message */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a73e8;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-family: "Roboto", "Google Sans", Arial, sans-serif;
+      z-index: 9999;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    @media (max-width: 480px) {
+      #cartList li {
+        font-size: 14px;
+        padding: 10px 15px;
+      }
+
+      .gs-button {
+        font-size: 14px;
+        padding: 8px 20px;
+      }
+    }
   </style>
 </head>
 <body>
   <h1>🛒 My Cart</h1>
   <ul id="cartList"></ul>
-  <button onclick="clearCart()">Clear Cart</button>
-  <button class="checkout" onclick="checkout()">Checkout</button>
+
+  <div class="cart-buttons">
+    <button class="gs-button" onclick="clearCart()">Clear Cart</button>
+    <button class="gs-button" onclick="checkout()">Checkout</button>
+  </div>
 
   <script>
-    // Get URL params
+    // Load cart from localStorage
     const urlParams = new URLSearchParams(window.location.search);
     const newItem = urlParams.get('item');
 
-    // Load cart from localStorage or empty array
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-    // If new item exists, add to cart
     if (newItem) {
       cart.push(newItem);
       localStorage.setItem('cart', JSON.stringify(cart));
+
+      // Show toast
+      const msg = document.createElement('div');
+      msg.className = 'toast';
+      msg.textContent = newItem + " added to cart";
+      document.body.appendChild(msg);
+      setTimeout(() => msg.remove(), 2000);
     }
 
-    // Display cart
     const cartList = document.getElementById('cartList');
     if (cart.length === 0) {
       cartList.innerHTML = "<li>Cart is empty</li>";
@@ -42,24 +131,20 @@
       cartList.innerHTML = cart.map(item => `<li>${item}</li>`).join('');
     }
 
-    // Clear cart function
     function clearCart() {
       localStorage.removeItem('cart');
-      location.href = 'index.html';
+      cart = [];
+      cartList.innerHTML = "<li>Cart is empty</li>";
     }
 
-    // Checkout function - download cart as text file
     function checkout() {
-      if (cart.length === 0) {
-        alert("Your cart is empty!");
-        return;
-      }
+      if (cart.length === 0) return;
       const textContent = "My Cart Items:\n\n" + cart.join("\n");
       const blob = new Blob([textContent], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
+      const a = document.createElement('a');
       a.href = url;
-      a.download = "cart_items.txt";
+      a.download = 'cart_items.txt';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
