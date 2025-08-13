@@ -12,91 +12,59 @@
     padding: 20px;
     text-align: center;
   }
-
-  h1 {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 10px;
-  }
-
-  #totalQty {
-    font-size: 18px;
-    margin-bottom: 20px;
-    color: #555;
-  }
-
+  h1 { font-size: 24px; color: #333; margin-bottom: 10px; }
+  #totalQty { font-size: 18px; margin-bottom: 20px; color: #555; }
   #cartList {
-    list-style: none;
-    padding: 0;
-    margin: 0 auto 20px auto;
-    max-width: 500px;
-    text-align: left;
+    list-style: none; padding: 0; margin: 0 auto 20px auto;
+    max-width: 500px; text-align: left;
   }
-
   #cartList li {
-    background: #fff;
-    border-radius: 12px;
-    margin: 10px 0;
-    padding: 12px 20px;
-    font-size: 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    background: #fff; border-radius: 12px; margin: 10px 0; padding: 12px 20px;
+    font-size: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex; justify-content: space-between; align-items: center;
   }
-
   .item-controls button {
-    margin: 0 5px;
-    border: none;
-    border-radius: 12px;
-    padding: 5px 10px;
-    font-weight: bold;
-    cursor: pointer;
+    margin: 0 5px; border: none; border-radius: 12px;
+    padding: 5px 10px; font-weight: bold; cursor: pointer;
   }
-
   .plus { background-color: #1a73e8; color: #fff; }
   .minus { background-color: #666; color: #fff; }
   .remove { background-color: #e53935; color: #fff; }
-
   .cart-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 30px;
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 10px; margin-bottom: 30px;
   }
-
   .gs-button {
     font-family: "Roboto", "Google Sans", Arial, sans-serif;
-    font-size: 16px;
-    font-weight: 500;
-    color: #fff;
-    background-color: #1a73e8; 
-    border: none;
-    border-radius: 24px;
-    padding: 10px 24px;
-    cursor: pointer;
+    font-size: 16px; font-weight: 500; color: #fff;
+    background-color: #1a73e8; border: none; border-radius: 24px;
+    padding: 10px 24px; cursor: pointer;
     box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
   }
-
   .gs-button:hover { background-color: #1669c1; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
   .gs-button:active { background-color: #145ab8; transform: scale(0.98); }
-
   .toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
+    position: fixed; bottom: 20px; left: 50%;
     transform: translateX(-50%);
-    background: #1a73e8;
-    color: #fff;
-    padding: 10px 15px;
-    border-radius: 20px;
-    font-family: "Roboto", "Google Sans", Arial, sans-serif;
-    z-index: 9999;
+    background: #1a73e8; color: #fff; padding: 10px 15px;
+    border-radius: 20px; z-index: 9999;
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   }
-
+  /* Phone number modal */
+  #phoneModal {
+    display: none; position: fixed; z-index: 10000;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+  }
+  #phoneModalContent {
+    background: #fff; padding: 20px; border-radius: 12px;
+    max-width: 300px; margin: 15% auto; text-align: center;
+  }
+  #phoneModal input {
+    width: 100%; padding: 8px; margin: 10px 0;
+    border-radius: 8px; border: 1px solid #ccc;
+  }
   @media (max-width: 480px) {
     #cartList li { font-size: 14px; padding: 10px 15px; }
     .gs-button { font-size: 14px; padding: 8px 20px; }
@@ -108,88 +76,124 @@
   <h1>🛒 My Cart</h1>
   <div id="totalQty">Total Items: 0</div>
   <ul id="cartList"></ul>
-
   <div class="cart-buttons">
     <button class="gs-button" onclick="clearCart()">Clear Cart</button>
-    <button class="gs-button" onclick="checkout()">Checkout</button>
+    <button class="gs-button" onclick="showPhoneModal()">Checkout</button>
   </div>
 
+  <!-- Phone Number Modal -->
+  <div id="phoneModal">
+    <div id="phoneModalContent">
+      <h3>Enter Phone Number</h3>
+      <input type="tel" id="phoneNumber" placeholder="e.g. +1234567890" required>
+      <br>
+      <button class="gs-button" onclick="sendOrder()">Submit</button>
+      <button class="remove" onclick="closePhoneModal()">Cancel</button>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
-let cart = JSON.parse(localStorage.getItem('cart')) || {};
+  emailjs.init("KL9tzTpfIKMZOOfGi");
 
-const urlParams = new URLSearchParams(window.location.search);
-const newItem = urlParams.get('item');
-if (newItem) {
-  if (cart[newItem]) cart[newItem] += 1;
-  else cart[newItem] = 1;
-  localStorage.setItem('cart', JSON.stringify(cart));
-  showToast(newItem + " added to cart");
-}
+  let cart = JSON.parse(localStorage.getItem('cart')) || {};
 
-const cartList = document.getElementById('cartList');
-const totalQtyDiv = document.getElementById('totalQty');
-
-function renderCart() {
-  const keys = Object.keys(cart);
-  if (keys.length === 0) {
-    cartList.innerHTML = "<li>Cart is empty</li>";
-    totalQtyDiv.textContent = "Total Items: 0";
-    return;
+  const urlParams = new URLSearchParams(window.location.search);
+  const newItem = urlParams.get('item');
+  if (newItem) {
+    if (cart[newItem]) cart[newItem] += 1;
+    else cart[newItem] = 1;
+    localStorage.setItem('cart', JSON.stringify(cart));
+    showToast(newItem + " added to cart");
   }
 
-  cartList.innerHTML = keys.map(item => 
-    `<li>
-      <span>${item} x ${cart[item]}</span>
-      <span class="item-controls">
-        <button class="minus" onclick="decrease('${item}')">−</button>
-        <button class="plus" onclick="increase('${item}')">+</button>
-        <button class="remove" onclick="removeItem('${item}')">Remove</button>
-      </span>
-    </li>`).join('');
+  const cartList = document.getElementById('cartList');
+  const totalQtyDiv = document.getElementById('totalQty');
 
-  const totalQty = keys.reduce((sum, k) => sum + cart[k], 0);
-  totalQtyDiv.textContent = "Total Items: " + totalQty;
-}
+  function renderCart() {
+    const keys = Object.keys(cart);
+    if (keys.length === 0) {
+      cartList.innerHTML = "<li>Cart is empty</li>";
+      totalQtyDiv.textContent = "Total Items: 0";
+      return;
+    }
+    cartList.innerHTML = keys.map(item => 
+      `<li>
+        <span>${item} x ${cart[item]}</span>
+        <span class="item-controls">
+          <button class="minus" onclick="decrease('${item}')">−</button>
+          <button class="plus" onclick="increase('${item}')">+</button>
+          <button class="remove" onclick="removeItem('${item}')">Remove</button>
+        </span>
+      </li>`).join('');
+    const totalQty = keys.reduce((sum, k) => sum + cart[k], 0);
+    totalQtyDiv.textContent = "Total Items: " + totalQty;
+  }
 
-function increase(item) { cart[item] += 1; updateCart(); }
-function decrease(item) { 
-  if (cart[item] > 1) cart[item] -= 1; 
-  else delete cart[item];
-  updateCart(); 
-}
-function removeItem(item) { delete cart[item]; updateCart(); }
+  function increase(item) { cart[item] += 1; updateCart(); }
+  function decrease(item) { 
+    if (cart[item] > 1) cart[item] -= 1; 
+    else delete cart[item];
+    updateCart(); 
+  }
+  function removeItem(item) { delete cart[item]; updateCart(); }
 
-function updateCart() {
-  localStorage.setItem('cart', JSON.stringify(cart));
+  function updateCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+    renderCart();
+  }
+
+  function clearCart() { cart = {}; updateCart(); }
+
+  function showPhoneModal() {
+    if (Object.keys(cart).length === 0) {
+      showToast("Your cart is empty");
+      return;
+    }
+    document.getElementById("phoneModal").style.display = "block";
+  }
+
+  function closePhoneModal() {
+    document.getElementById("phoneModal").style.display = "none";
+  }
+
+  function sendOrder() {
+    const phone = document.getElementById("phoneNumber").value.trim();
+    if (!phone) {
+      showToast("Please enter a phone number");
+      return;
+    }
+    let items = [];
+    let quantities = [];
+    for (let item in cart) {
+      items.push(item);
+      quantities.push(cart[item]);
+    }
+    emailjs.send("template_58g6y6s", "template_9mrozeg", {
+      items: items.join(", "),
+      quantity: quantities.join(", "),
+      phone: phone
+    })
+    .then(() => {
+      showToast("Order sent successfully");
+      clearCart();
+      closePhoneModal();
+    })
+    .catch(err => {
+      console.error("EmailJS error", err);
+      showToast("Failed to send order");
+    });
+  }
+
+  function showToast(msgText) {
+    const msg = document.createElement('div');
+    msg.className = 'toast';
+    msg.textContent = msgText;
+    document.body.appendChild(msg);
+    setTimeout(() => msg.remove(), 2000);
+  }
+
   renderCart();
-}
-
-function clearCart() { cart = {}; updateCart(); }
-
-function checkout() {
-  if (Object.keys(cart).length === 0) return;
-  let text = "My Cart Summary:\n\n";
-  for (let item in cart) text += `${item} x ${cart[item]}\n`;
-  const blob = new Blob([text], {type: "text/plain"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'cart_summary.txt';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-function showToast(msgText) {
-  const msg = document.createElement('div');
-  msg.className = 'toast';
-  msg.textContent = msgText;
-  document.body.appendChild(msg);
-  setTimeout(() => msg.remove(), 2000);
-}
-
-renderCart();
 </script>
 </body>
 </html>
