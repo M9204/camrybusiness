@@ -24,6 +24,7 @@
       padding: 0;
       margin: 0 auto 20px auto;
       max-width: 500px;
+      text-align: left;
     }
 
     #cartList li {
@@ -31,9 +32,11 @@
       border-radius: 12px;
       margin: 10px 0;
       padding: 12px 20px;
-      text-align: left;
       font-size: 16px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .cart-buttons {
@@ -49,9 +52,9 @@
       font-size: 16px;
       font-weight: 500;
       color: #fff;
-      background-color: #1a73e8; /* Google primary blue */
+      background-color: #1a73e8; 
       border: none;
-      border-radius: 24px;       /* rounded pill shape */
+      border-radius: 24px;
       padding: 10px 24px;
       cursor: pointer;
       box-shadow: 0 1px 2px rgba(0,0,0,0.2);
@@ -68,7 +71,6 @@
       transform: scale(0.98);
     }
 
-    /* Toast message */
     .toast {
       position: fixed;
       bottom: 20px;
@@ -106,14 +108,18 @@
   </div>
 
   <script>
-    // Load cart from localStorage
+    // Load cart as object {itemName: quantity}
+    let cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+    // Add new item if passed via URL
     const urlParams = new URLSearchParams(window.location.search);
     const newItem = urlParams.get('item');
-
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
     if (newItem) {
-      cart.push(newItem);
+      if (cart[newItem]) {
+        cart[newItem] += 1;
+      } else {
+        cart[newItem] = 1;
+      }
       localStorage.setItem('cart', JSON.stringify(cart));
 
       // Show toast
@@ -124,27 +130,39 @@
       setTimeout(() => msg.remove(), 2000);
     }
 
+    // Display cart
     const cartList = document.getElementById('cartList');
-    if (cart.length === 0) {
-      cartList.innerHTML = "<li>Cart is empty</li>";
-    } else {
-      cartList.innerHTML = cart.map(item => `<li>${item}</li>`).join('');
+    function renderCart() {
+      const keys = Object.keys(cart);
+      if (keys.length === 0) {
+        cartList.innerHTML = "<li>Cart is empty</li>";
+      } else {
+        cartList.innerHTML = keys.map(item => 
+          `<li>${item} <strong>x ${cart[item]}</strong></li>`
+        ).join('');
+      }
     }
+    renderCart();
 
+    // Clear cart
     function clearCart() {
       localStorage.removeItem('cart');
-      cart = [];
-      cartList.innerHTML = "<li>Cart is empty</li>";
+      cart = {};
+      renderCart();
     }
 
+    // Checkout as text file
     function checkout() {
-      if (cart.length === 0) return;
-      const textContent = "My Cart Items:\n\n" + cart.join("\n");
-      const blob = new Blob([textContent], { type: "text/plain" });
+      if (Object.keys(cart).length === 0) return;
+      let textContent = "My Cart Summary:\n\n";
+      for (let item in cart) {
+        textContent += `${item} x ${cart[item]}\n`;
+      }
+      const blob = new Blob([textContent], {type: "text/plain"});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'cart_items.txt';
+      a.download = 'cart_summary.txt';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
