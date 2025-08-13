@@ -1,105 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Cart</title>
-  <style>
-    body {
-      font-family: "Roboto", "Google Sans", Arial, sans-serif;
-      background: #f1f3f4;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Cart</title>
+<style>
+  body {
+    font-family: "Roboto", "Google Sans", Arial, sans-serif;
+    background: #f1f3f4;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+  }
 
-    h1 {
-      font-size: 24px;
-      color: #333;
-      margin-bottom: 20px;
-    }
+  h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+  }
 
-    #cartList {
-      list-style: none;
-      padding: 0;
-      margin: 0 auto 20px auto;
-      max-width: 500px;
-      text-align: left;
-    }
+  #totalQty {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #555;
+  }
 
-    #cartList li {
-      background: #fff;
-      border-radius: 12px;
-      margin: 10px 0;
-      padding: 12px 20px;
-      font-size: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+  #cartList {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto 20px auto;
+    max-width: 500px;
+    text-align: left;
+  }
 
-    .cart-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 30px;
-    }
+  #cartList li {
+    background: #fff;
+    border-radius: 12px;
+    margin: 10px 0;
+    padding: 12px 20px;
+    font-size: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-    .gs-button {
-      font-family: "Roboto", "Google Sans", Arial, sans-serif;
-      font-size: 16px;
-      font-weight: 500;
-      color: #fff;
-      background-color: #1a73e8; 
-      border: none;
-      border-radius: 24px;
-      padding: 10px 24px;
-      cursor: pointer;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-      transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
-    }
+  .item-controls button {
+    margin: 0 5px;
+    border: none;
+    border-radius: 12px;
+    padding: 5px 10px;
+    font-weight: bold;
+    cursor: pointer;
+  }
 
-    .gs-button:hover {
-      background-color: #1669c1;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
+  .plus { background-color: #1a73e8; color: #fff; }
+  .minus { background-color: #666; color: #fff; }
+  .remove { background-color: #e53935; color: #fff; }
 
-    .gs-button:active {
-      background-color: #145ab8;
-      transform: scale(0.98);
-    }
+  .cart-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+  }
 
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1a73e8;
-      color: #fff;
-      padding: 10px 15px;
-      border-radius: 20px;
-      font-family: "Roboto", "Google Sans", Arial, sans-serif;
-      z-index: 9999;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
+  .gs-button {
+    font-family: "Roboto", "Google Sans", Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #fff;
+    background-color: #1a73e8; 
+    border: none;
+    border-radius: 24px;
+    padding: 10px 24px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+  }
 
-    @media (max-width: 480px) {
-      #cartList li {
-        font-size: 14px;
-        padding: 10px 15px;
-      }
+  .gs-button:hover { background-color: #1669c1; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+  .gs-button:active { background-color: #145ab8; transform: scale(0.98); }
 
-      .gs-button {
-        font-size: 14px;
-        padding: 8px 20px;
-      }
-    }
-  </style>
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a73e8;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-family: "Roboto", "Google Sans", Arial, sans-serif;
+    z-index: 9999;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  @media (max-width: 480px) {
+    #cartList li { font-size: 14px; padding: 10px 15px; }
+    .gs-button { font-size: 14px; padding: 8px 20px; }
+    .item-controls button { padding: 4px 8px; font-size: 14px; }
+  }
+</style>
 </head>
 <body>
   <h1>🛒 My Cart</h1>
+  <div id="totalQty">Total Items: 0</div>
   <ul id="cartList"></ul>
 
   <div class="cart-buttons">
@@ -107,67 +114,82 @@
     <button class="gs-button" onclick="checkout()">Checkout</button>
   </div>
 
-  <script>
-    // Load cart as object {itemName: quantity}
-    let cart = JSON.parse(localStorage.getItem('cart')) || {};
+<script>
+let cart = JSON.parse(localStorage.getItem('cart')) || {};
 
-    // Add new item if passed via URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const newItem = urlParams.get('item');
-    if (newItem) {
-      if (cart[newItem]) {
-        cart[newItem] += 1;
-      } else {
-        cart[newItem] = 1;
-      }
-      localStorage.setItem('cart', JSON.stringify(cart));
+const urlParams = new URLSearchParams(window.location.search);
+const newItem = urlParams.get('item');
+if (newItem) {
+  if (cart[newItem]) cart[newItem] += 1;
+  else cart[newItem] = 1;
+  localStorage.setItem('cart', JSON.stringify(cart));
+  showToast(newItem + " added to cart");
+}
 
-      // Show toast
-      const msg = document.createElement('div');
-      msg.className = 'toast';
-      msg.textContent = newItem + " added to cart";
-      document.body.appendChild(msg);
-      setTimeout(() => msg.remove(), 2000);
-    }
+const cartList = document.getElementById('cartList');
+const totalQtyDiv = document.getElementById('totalQty');
 
-    // Display cart
-    const cartList = document.getElementById('cartList');
-    function renderCart() {
-      const keys = Object.keys(cart);
-      if (keys.length === 0) {
-        cartList.innerHTML = "<li>Cart is empty</li>";
-      } else {
-        cartList.innerHTML = keys.map(item => 
-          `<li>${item} <strong>x ${cart[item]}</strong></li>`
-        ).join('');
-      }
-    }
-    renderCart();
+function renderCart() {
+  const keys = Object.keys(cart);
+  if (keys.length === 0) {
+    cartList.innerHTML = "<li>Cart is empty</li>";
+    totalQtyDiv.textContent = "Total Items: 0";
+    return;
+  }
 
-    // Clear cart
-    function clearCart() {
-      localStorage.removeItem('cart');
-      cart = {};
-      renderCart();
-    }
+  cartList.innerHTML = keys.map(item => 
+    `<li>
+      <span>${item} x ${cart[item]}</span>
+      <span class="item-controls">
+        <button class="minus" onclick="decrease('${item}')">−</button>
+        <button class="plus" onclick="increase('${item}')">+</button>
+        <button class="remove" onclick="removeItem('${item}')">Remove</button>
+      </span>
+    </li>`).join('');
 
-    // Checkout as text file
-    function checkout() {
-      if (Object.keys(cart).length === 0) return;
-      let textContent = "My Cart Summary:\n\n";
-      for (let item in cart) {
-        textContent += `${item} x ${cart[item]}\n`;
-      }
-      const blob = new Blob([textContent], {type: "text/plain"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'cart_summary.txt';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-  </script>
+  const totalQty = keys.reduce((sum, k) => sum + cart[k], 0);
+  totalQtyDiv.textContent = "Total Items: " + totalQty;
+}
+
+function increase(item) { cart[item] += 1; updateCart(); }
+function decrease(item) { 
+  if (cart[item] > 1) cart[item] -= 1; 
+  else delete cart[item];
+  updateCart(); 
+}
+function removeItem(item) { delete cart[item]; updateCart(); }
+
+function updateCart() {
+  localStorage.setItem('cart', JSON.stringify(cart));
+  renderCart();
+}
+
+function clearCart() { cart = {}; updateCart(); }
+
+function checkout() {
+  if (Object.keys(cart).length === 0) return;
+  let text = "My Cart Summary:\n\n";
+  for (let item in cart) text += `${item} x ${cart[item]}\n`;
+  const blob = new Blob([text], {type: "text/plain"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'cart_summary.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function showToast(msgText) {
+  const msg = document.createElement('div');
+  msg.className = 'toast';
+  msg.textContent = msgText;
+  document.body.appendChild(msg);
+  setTimeout(() => msg.remove(), 2000);
+}
+
+renderCart();
+</script>
 </body>
 </html>
