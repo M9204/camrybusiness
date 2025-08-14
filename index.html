@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Cart</title>
+<style>
+  /* Keep body centered with fixed phone-style width */
+body {
+  font-family: "Roboto", "Google Sans", Arial, sans-serif;
+  background: #f1f3f4;
+  margin: 0;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 400px; /* phone width */
+  background: #f1f3f4;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Headings */
+h1 { 
+  font-size: 24px; 
+  color: #333; 
+  margin: 20px 0 10px; 
+  text-align: center;
+}
+
+#totalQty { 
+  font-size: 18px; 
+  margin-bottom: 20px; 
+  color: #555; 
+}
+
+/* Cart list */
+#cartList { 
+  list-style: none; 
+  padding: 0; 
+  margin: 0 0 20px 0; 
+  width: 100%; 
+}
+
+#cartList li {
+  background: #fff; 
+  border-radius: 12px; 
+  margin: 10px 0; 
+  padding: 12px 16px;
+  font-size: 16px; 
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+}
+
+/* Buttons inside items */
+.item-controls button { 
+  margin: 0 3px; 
+  border: none; 
+  border-radius: 8px; 
+  padding: 6px 10px; 
+  font-weight: bold; 
+  cursor: pointer; 
+  font-size: 14px;
+}
+.plus { background-color: #1a73e8; color: #fff; }
+.minus { background-color: #666; color: #fff; }
+.remove { background-color: #e53935; color: #fff; }
+
+/* Cart action buttons */
+.cart-buttons { 
+  display: flex; 
+  flex-wrap: wrap; 
+  justify-content: center; 
+  gap: 10px; 
+  margin-bottom: 30px; 
+  width: 100%;
+}
+.gs-button {
+  flex: 1;
+  min-width: 140px;
+  text-align: center;
+  font-size: 16px; 
+  font-weight: 500; 
+  color: #fff; 
+  background-color: #1a73e8; 
+  border: none; 
+  border-radius: 24px;
+  padding: 10px; 
+  cursor: pointer; 
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+.gs-button:hover { background-color: #1669c1; }
+.gs-button:active { background-color: #145ab8; transform: scale(0.98); }
+
+/* Toast message */
+.toast {
+  position: fixed; 
+  bottom: 20px; 
+  left: 50%; 
+  transform: translateX(-50%);
+  background: #1a73e8; 
+  color: #fff; 
+  padding: 10px 15px; 
+  border-radius: 20px;
+  font-family: "Roboto", "Google Sans", Arial, sans-serif; 
+  z-index: 9999;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Modal */
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 10000; 
+  left: 0; top: 0;
+  width: 100%; height: 100%; 
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+.modal-content {
+  background-color: #fff; 
+  margin: 15% auto; 
+  padding: 20px;
+  border-radius: 12px; 
+  width: 90%; 
+  max-width: 350px; 
+  text-align: left;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.modal-content h2 {
+  margin-top: 0; 
+  color: #333;
+}
+.modal-content label {
+  display: block; 
+  margin: 10px 0 5px; 
+  font-weight: bold;
+}
+.modal-content input {
+  width: 100%; 
+  padding: 8px; 
+  border: 1px solid #ccc;
+  border-radius: 6px; 
+  font-size: 14px;
+}
+.modal-actions {
+  margin-top: 15px; 
+  text-align: right;
+}
+.modal-actions button {
+  margin-left: 10px;
+}
+
+ /* body {
+    font-family: "Roboto", "Google Sans", Arial, sans-serif;
+    background: #f1f3f4;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+  }
+  h1 { font-size: 24px; color: #333; margin-bottom: 10px; }
+  #totalQty { font-size: 18px; margin-bottom: 20px; color: #555; }
+  #cartList { list-style: none; padding: 0; margin: 0 auto 20px auto; max-width: 500px; text-align: left; }
+  #cartList li {
+    background: #fff; border-radius: 12px; margin: 10px 0; padding: 12px 20px;
+    font-size: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .item-controls button { margin: 0 5px; border: none; border-radius: 12px; padding: 5px 10px; font-weight: bold; cursor: pointer; }
+  .plus { background-color: #1a73e8; color: #fff; }
+  .minus { background-color: #666; color: #fff; }
+  .remove { background-color: #e53935; color: #fff; }
+  .cart-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 30px; }
+  .gs-button {
+    font-family: "Roboto", "Google Sans", Arial, sans-serif;
+    font-size: 16px; font-weight: 500; color: #fff; background-color: #1a73e8; border: none; border-radius: 24px;
+    padding: 10px 24px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+  }
+  .gs-button:hover { background-color: #1669c1; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+  .gs-button:active { background-color: #145ab8; transform: scale(0.98); }
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: #1a73e8; color: #fff; padding: 10px 15px; border-radius: 20px;
+    font-family: "Roboto", "Google Sans", Arial, sans-serif; z-index: 9999;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  /* Modal styles */
+  .modal {
+    display: none; position: fixed; z-index: 10000; left: 0; top: 0;
+    width: 100%; height: 100%; overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+  }
+  .modal-content {
+    background-color: #fff; margin: 15% auto; padding: 20px;
+    border-radius: 12px; width: 90%; max-width: 400px; text-align: left;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  .modal-content h2 {
+    margin-top: 0; color: #333;
+  }
+  .modal-content label {
+    display: block; margin: 10px 0 5px; font-weight: bold;
+  }
+  .modal-content input {
+    width: 100%; padding: 8px; border: 1px solid #ccc;
+    border-radius: 6px; font-size: 14px;
+  }
+  .modal-actions {
+    margin-top: 15px; text-align: right;
+  }
+  .modal-actions button {
+    margin-left: 10px;
+  }*/
+</style>
+</head>
+<body>
+  <div class="cart-container">
+    <h1>Camry Cart</h1>
+    <div id="totalQty">Total Items: 0</div>
+    <ul id="cartList"></ul>
+
+    <div class="cart-buttons">
+      <button class="gs-button clear" onclick="clearCart()">Clear Cart</button>
+      <button class="gs-button checkout" onclick="openCheckoutForm()">Checkout</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="checkoutModal" class="modal">
+    <div class="modal-content">
+      <h2>Checkout Information</h2>
+      <label for="nameInput">Name:</label>
+      <input type="text" id="nameInput" placeholder="Your name">
+      <label for="phoneInput">Phone Number:</label>
+      <input type="text" id="phoneInput" placeholder="Your phone number">
+      <div class="modal-actions">
+        <button class="gs-button cancel" onclick="closeCheckoutForm()">Cancel</button>
+        <button class="gs-button submit" onclick="checkout()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+(function(){
+  emailjs.init("KL9tzTpfIKMZOOfGi"); // Public user ID
+})();
+
+let cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+const urlParams = new URLSearchParams(window.location.search);
+const newItem = urlParams.get('item');
+if (newItem) {
+  if (cart[newItem]) cart[newItem] += 1;
+  else cart[newItem] = 1;
+  localStorage.setItem('cart', JSON.stringify(cart));
+  showToast(newItem + " added to cart");
+}
+
+const cartList = document.getElementById('cartList');
+const totalQtyDiv = document.getElementById('totalQty');
+
+function renderCart() {
+  const keys = Object.keys(cart);
+  if (keys.length === 0) {
+    cartList.innerHTML = "<li>Cart is empty</li>";
+    totalQtyDiv.textContent = "Total Items: 0";
+    return;
+  }
+
+  cartList.innerHTML = keys.map(item => 
+    `<li>
+      <span>${item} x ${cart[item]}</span>
+      <span class="item-controls">
+        <button class="minus" onclick="decrease('${item}')">−</button>
+        <button class="plus" onclick="increase('${item}')">+</button>
+        <button class="remove" onclick="removeItem('${item}')">Remove</button>
+      </span>
+    </li>`).join('');
+
+  const totalQty = keys.reduce((sum, k) => sum + cart[k], 0);
+  totalQtyDiv.textContent = "Total Items: " + totalQty;
+}
+
+function increase(item) { cart[item] += 1; updateCart(); }
+function decrease(item) { 
+  if (cart[item] > 1) cart[item] -= 1; 
+  else delete cart[item];
+  updateCart(); 
+}
+function removeItem(item) { delete cart[item]; updateCart(); }
+
+function updateCart() {
+  localStorage.setItem('cart', JSON.stringify(cart));
+  renderCart();
+}
+
+function clearCart() { cart = {}; updateCart(); }
+
+function openCheckoutForm() {
+  if (Object.keys(cart).length === 0) {
+    showToast("Your cart is empty!");
+    return;
+  }
+  document.getElementById('checkoutModal').style.display = 'block';
+}
+
+function closeCheckoutForm() {
+  document.getElementById('checkoutModal').style.display = 'none';
+}
+
+function checkout() {
+  const name = document.getElementById('nameInput').value.trim();
+  const phone = document.getElementById('phoneInput').value.trim();
+
+  if (!name || !phone) {
+    showToast("Please fill in all fields!");
+    return;
+  }
+
+  let cartSummary = "";
+  for (let item in cart) {
+    cartSummary += `${item} x ${cart[item]}\n`;
+  }
+
+  const templateParams = {
+    name: name,
+    phone: phone,
+    items: cartSummary,
+    email: "cloudyskyqa@gmail.com"
+  };
+
+  emailjs.send("service_ezl7f8j", "template_kijmp3l", templateParams)
+    .then(function(response) {
+        console.log("SUCCESS!", response.status, response.text);
+        showToast("Email sent successfully!");
+        clearCart();
+        closeCheckoutForm();
+    }, function(error) {
+        console.error("FAILED...", error);
+        showToast("Failed to send email");
+    });
+}
+
+function showToast(msgText) {
+  const msg = document.createElement('div');
+  msg.className = 'toast';
+  msg.textContent = msgText;
+  document.body.appendChild(msg);
+  setTimeout(() => msg.remove(), 2000);
+}
+
+renderCart();
+</script>
+</body>
+</html>
