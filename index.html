@@ -6,176 +6,138 @@
 <title>My Cart</title>
 <style>
   body {
-  font-family: "Roboto", "Google Sans", Arial, sans-serif;
-  background: #f1f3f4;
-  margin: 0;
-  padding: 20px;
-  text-align: center;
-
-  /* Force phone width */
-  max-width: 420px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-h1 {
-  font-size: 20px; /* Slightly smaller for mobile feel */
-  color: #333;
-  margin-bottom: 8px;
-}
-
-#totalQty {
-  font-size: 16px;
-  margin-bottom: 16px;
-  color: #555;
-}
-
-#cartList {
-  list-style: none;
-  padding: 0;
-  margin: 0 auto 16px auto;
-  max-width: 100%;
-  text-align: left;
-}
-
-#cartList li {
-  background: #fff;
-  border-radius: 10px;
-  margin: 8px 0;
-  padding: 10px 16px;
-  font-size: 14px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.item-controls button {
-  margin: 0 3px;
-  border: none;
-  border-radius: 8px;
-  padding: 4px 8px;
-  font-weight: bold;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.plus {
-  background-color: #1a73e8;
-  color: #fff;
-}
-
-.minus {
-  background-color: #666;
-  color: #fff;
-}
-
-.remove {
-  background-color: #e53935;
-  color: #fff;
-}
-
-.cart-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-.gs-button {
-  font-family: "Roboto", "Google Sans", Arial, sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  color: #fff;
-  background-color: #1a73e8;
-  border: none;
-  border-radius: 20px;
-  padding: 8px 16px;
-  cursor: pointer;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-  transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
-}
-
-.gs-button:hover {
-  background-color: #1669c1;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.gs-button:active {
-  background-color: #145ab8;
-  transform: scale(0.98);
-}
-
-.toast {
-  position: fixed;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #1a73e8;
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 16px;
-  font-family: "Roboto", "Google Sans", Arial, sans-serif;
-  font-size: 14px;
-  z-index: 9999;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-/* Modal styles */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 10000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.4);
-}
-
-.modal-content {
-  background-color: #fff;
-  margin: 20% auto;
-  padding: 16px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 360px;
-  text-align: left;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-}
-
-.modal-content h2 {
-  margin-top: 0;
-  color: #333;
-  font-size: 18px;
-}
-
-.modal-content label {
-  display: block;
-  margin: 8px 0 4px;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.modal-content input {
-  width: 100%;
-  padding: 6px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-.modal-actions {
-  margin-top: 12px;
-  text-align: right;
-}
-
-.modal-actions button {
-  margin-left: 8px;
-}
-
+    font-family: "Roboto", "Google Sans", Arial, sans-serif;
+    background: #f1f3f4;
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+    max-width: 420px; /* Force narrow mobile-like width */
+    margin-left: auto;
+    margin-right: auto;
+  }
+  h1 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  #totalQty {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: #555;
+  }
+  #cartList {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto 15px auto;
+    max-width: 100%;
+    text-align: left;
+  }
+  #cartList li {
+    background: #fff;
+    border-radius: 8px;
+    margin: 6px 0;
+    padding: 8px 12px;
+    font-size: 13px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .item-controls button {
+    margin: 0 3px;
+    border: none;
+    border-radius: 8px;
+    padding: 3px 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .plus { background-color: #1a73e8; color: #fff; }
+  .minus { background-color: #666; color: #fff; }
+  .remove { background-color: #e53935; color: #fff; }
+  .cart-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 15px;
+  }
+  .gs-button {
+    font-family: "Roboto", "Google Sans", Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    background-color: #1a73e8;
+    border: none;
+    border-radius: 18px;
+    padding: 6px 14px;
+    cursor: pointer;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+  }
+  .gs-button:hover { background-color: #1669c1; }
+  .gs-button:active { background-color: #145ab8; transform: scale(0.98); }
+  .toast {
+    position: fixed;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a73e8;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    z-index: 9999;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  /* Modal styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.4);
+  }
+  .modal-content {
+    background-color: #fff;
+    margin: 25% auto;
+    padding: 12px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 320px;
+    text-align: left;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    font-size: 13px;
+  }
+  .modal-content h2 {
+    margin-top: 0;
+    font-size: 14px;
+    color: #333;
+  }
+  .modal-content label {
+    display: block;
+    margin: 6px 0 3px;
+    font-weight: bold;
+    font-size: 12px;
+  }
+  .modal-content input {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  .modal-actions {
+    margin-top: 10px;
+    text-align: right;
+  }
+  .modal-actions button {
+    margin-left: 6px;
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 14px;
+  }
 </style>
 </head>
 <body>
@@ -206,7 +168,7 @@ h1 {
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
 (function(){
-  emailjs.init("KL9tzTpfIKMZOOfGi"); // Public user ID
+  emailjs.init("KL9tzTpfIKMZOOfGi");
 })();
 
 let cart = JSON.parse(localStorage.getItem('cart')) || {};
@@ -237,7 +199,7 @@ function renderCart() {
       <span class="item-controls">
         <button class="minus" onclick="decrease('${item}')">−</button>
         <button class="plus" onclick="increase('${item}')">+</button>
-        <button class="remove" onclick="removeItem('${item}')">Remove</button>
+        <button class="remove" onclick="removeItem('${item}')">X</button>
       </span>
     </li>`).join('');
 
@@ -252,14 +214,11 @@ function decrease(item) {
   updateCart(); 
 }
 function removeItem(item) { delete cart[item]; updateCart(); }
-
 function updateCart() {
   localStorage.setItem('cart', JSON.stringify(cart));
   renderCart();
 }
-
 function clearCart() { cart = {}; updateCart(); }
-
 function openCheckoutForm() {
   if (Object.keys(cart).length === 0) {
     showToast("Your cart is empty!");
@@ -267,44 +226,35 @@ function openCheckoutForm() {
   }
   document.getElementById('checkoutModal').style.display = 'block';
 }
-
 function closeCheckoutForm() {
   document.getElementById('checkoutModal').style.display = 'none';
 }
-
 function checkout() {
   const name = document.getElementById('nameInput').value.trim();
   const phone = document.getElementById('phoneInput').value.trim();
-
   if (!name || !phone) {
     showToast("Please fill in all fields!");
     return;
   }
-
   let cartSummary = "";
   for (let item in cart) {
     cartSummary += `${item} x ${cart[item]}\n`;
   }
-
   const templateParams = {
     name: name,
     phone: phone,
     items: cartSummary,
     email: "cloudyskyqa@gmail.com"
   };
-
   emailjs.send("service_ezl7f8j", "template_kijmp3l", templateParams)
-    .then(function(response) {
-        console.log("SUCCESS!", response.status, response.text);
+    .then(function() {
         showToast("Email sent successfully!");
         clearCart();
         closeCheckoutForm();
-    }, function(error) {
-        console.error("FAILED...", error);
+    }, function() {
         showToast("Failed to send email");
     });
 }
-
 function showToast(msgText) {
   const msg = document.createElement('div');
   msg.className = 'toast';
@@ -312,7 +262,6 @@ function showToast(msgText) {
   document.body.appendChild(msg);
   setTimeout(() => msg.remove(), 2000);
 }
-
 renderCart();
 </script>
 </body>
