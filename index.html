@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Cart</title>
+
+
+<script 
+  src="https://www.paypal.com/sdk/js?client-id=BAABY972pVIpVMiL-wwmXFWw322ufZadHk2WYHt4FZsITUKjQ8E8uZoCxEwyZ-qms7Yx3ZmVqmpWhSJhyQ&components=hosted-buttons&disable-funding=venmo&currency=USD">
+</script>
+
+
+
+
+  
 <style>
   body {
     font-family: "Roboto", "Google Sans", Arial, sans-serif;
@@ -149,6 +159,19 @@
   <button class="gs-button" onclick="clearCart()">Clear Cart</button>
   <button class="gs-button" onclick="openCheckoutForm()">Checkout</button>
 </div>
+
+
+
+<div id="paypal-container-NR2B8CK2XDEQQ"></div>
+<script>
+  paypal.HostedButtons({
+    hostedButtonId: "NR2B8CK2XDEQQ",
+  }).render("#paypal-container-NR2B8CK2XDEQQ")
+</script>
+
+
+
+  
 
 <!-- Modal -->
 <div id="checkoutModal" class="modal">
