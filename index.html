@@ -96,7 +96,7 @@
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
 (function(){
-  emailjs.init("CIxJTBuY6z0zDygZB"); // Public user ID
+  emailjs.init("KL9tzTpfIKMZOOfGi"); // Public user ID
 })();
 
 let cart = JSON.parse(localStorage.getItem('cart')) || {};
@@ -183,7 +183,7 @@ function checkout() {
     email: "cloudyskyqa@gmail.com"
   };
 
-  emailjs.send("service_bgfjjx9", "template_nt9d7cm", templateParams)
+  emailjs.send("service_ezl7f8j", "template_kijmp3l", templateParams)
     .then(function(response) {
         console.log("SUCCESS!", response.status, response.text);
         showToast("Email sent successfully!");
