@@ -1,254 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Cart</title>
-
-<script 
-  src="https://www.paypal.com/sdk/js?client-id=BAABY972pVIpVMiL-wwmXFWw322ufZadHk2WYHt4FZsITUKjQ8E8uZoCxEwyZ-qms7Yx3ZmVqmpWhSJhyQ&components=hosted-buttons&disable-funding=venmo&currency=USD">
-</script>
-
-<style>
-  body {
-    font-family: "Roboto", "Google Sans", Arial, sans-serif;
-    background: #f1f3f4;
-    margin: 0;
-    padding: 10px;
-    text-align: center;
-    max-width: 420px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  h1 {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 8px;
-  }
-  #totalQty, #totalCost {
-    font-size: 14px;
-    margin-bottom: 8px;
-    color: #555;
-  }
-  #cartList {
-    list-style: none;
-    padding: 0;
-    margin: 0 auto 15px auto;
-    max-width: 100%;
-    text-align: left;
-  }
-  #cartList li {
-    background: #fff;
-    border-radius: 8px;
-    margin: 6px 0;
-    padding: 8px 12px;
-    font-size: 13px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .item-controls button {
-    margin: 0 3px;
-    border: none;
-    border-radius: 8px;
-    padding: 3px 6px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 12px;
-  }
-  .plus { background-color: #1a73e8; color: #fff; }
-  .minus { background-color: #666; color: #fff; }
-  .remove { background-color: #e53935; color: #fff; }
-  .cart-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 6px;
-    margin-bottom: 15px;
-  }
-  .gs-button {
-    font-family: "Roboto", "Google Sans", Arial, sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    color: #fff;
-    background-color: #1a73e8;
-    border: none;
-    border-radius: 18px;
-    padding: 6px 14px;
-    cursor: pointer;
-    box-shadow: 0 1px 1px rgba(0,0,0,0.2);
-    transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
-  }
-  .gs-button:hover { background-color: #1669c1; }
-  .gs-button:active { background-color: #145ab8; transform: scale(0.98); }
-  .toast {
-    position: fixed;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1a73e8;
-    color: #fff;
-    padding: 6px 10px;
-    border-radius: 15px;
-    font-size: 12px;
-    z-index: 9999;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  }
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 10000;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.4);
-  }
-  .modal-content {
-    background-color: #fff;
-    margin: 25% auto;
-    padding: 12px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 320px;
-    text-align: left;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    font-size: 13px;
-  }
-  .modal-content h2 { margin-top: 0; font-size: 14px; color: #333; }
-  .modal-content label { display: block; margin: 6px 0 3px; font-weight: bold; font-size: 12px; }
-  .modal-content input {
-    width: 100%; padding: 5px; border: 1px solid #ccc;
-    border-radius: 4px; font-size: 12px;
-  }
-  .modal-actions { margin-top: 10px; text-align: right; }
-  .modal-actions button {
-    margin-left: 6px; font-size: 12px; padding: 5px 12px; border-radius: 14px;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Parts Cart</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+    }
+    th {
+      background: #f1f1f1;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+    }
+    .search-section {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
-<h1>Camry Cart</h1>
-<div id="totalQty">Total Items: 0</div>
-<div id="totalCost">Total Cost: QAR 0</div>
-<ul id="cartList"></ul>
+  <div class="container">
+    <h1>my Cart</h1>
 
-<div class="cart-buttons">
-  <button class="gs-button" onclick="clearCart()">Clear Cart</button>
-  <button class="gs-button" onclick="openCheckoutForm()">Checkout</button>
-</div>
-
-<div id="paypal-container-NR2B8CK2XDEQQ"></div>
-<script>
-  paypal.HostedButtons({
-    hostedButtonId: "NR2B8CK2XDEQQ",
-  }).render("#paypal-container-NR2B8CK2XDEQQ")
-</script>
-
-<!-- Modal -->
-<div id="checkoutModal" class="modal">
-  <div class="modal-content">
-    <h2>Checkout Information</h2>
-    <label for="nameInput">Name:</label>
-    <input type="text" id="nameInput" placeholder="Your name">
-    <label for="phoneInput">Phone Number:</label>
-    <input type="text" id="phoneInput" placeholder="Your phone number">
-    <div class="modal-actions">
-      <button class="gs-button" onclick="closeCheckoutForm()">Cancel</button>
-      <button class="gs-button" onclick="checkout()">Submit</button>
+    <div class="search-section">
+      <input type="text" id="searchItem" placeholder="Enter item name...">
+      <button onclick="addItem()">Add to Cart</button>
     </div>
+
+    <table id="cartTable">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Cost (QAR)</th>
+          <th>Selling Cost (QAR)</th>
+          <th>Shipping Period</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
   </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-<script>
-(function(){ emailjs.init("KL9tzTpfIKMZOOfGi"); })();
+  <script>
+    // Load items from JSON file
+    let itemsData = [];
 
-let cart = JSON.parse(localStorage.getItem('cart')) || {};
-let products = [];
+    fetch("items.json")
+      .then(response => response.json())
+      .then(data => {
+        itemsData = data;
+      })
+      .catch(error => console.error("Error loading JSON:", error));
 
-// Load JSON product data
-fetch('car_parts.json')
-  .then(r => r.json())
-  .then(data => { products = data; renderCart(); });
+    function addItem() {
+      const searchValue = document.getElementById("searchItem").value.trim().toLowerCase();
+      if (!searchValue) return;
 
-// Match product
-function getProduct(itemName) {
-  return products.find(p => p.Item.toLowerCase() === itemName.toLowerCase());
-}
+      // case-insensitive search
+      const item = itemsData.find(i => i.Item.toLowerCase() === searchValue);
 
-const cartList = document.getElementById('cartList');
-const totalQtyDiv = document.getElementById('totalQty');
-const totalCostDiv = document.getElementById('totalCost');
+      if (item) {
+        const tableBody = document.querySelector("#cartTable tbody");
+        const row = document.createElement("tr");
 
-function renderCart() {
-  const keys = Object.keys(cart);
-  if (keys.length === 0) {
-    cartList.innerHTML = "<li>Cart is empty</li>";
-    totalQtyDiv.textContent = "Total Items: 0";
-    totalCostDiv.textContent = "Total Cost: QAR 0";
-    return;
-  }
+        row.innerHTML = `
+          <td>${item.Item}</td>
+          <td>${item["Cost (QAR)"]}</td>
+          <td>${item["Selling Cost (QAR)"].toFixed(2)}</td>
+          <td>${item["Shipping Period"]}</td>
+        `;
 
-  let totalQty = 0;
-  let totalCost = 0;
+        tableBody.appendChild(row);
+      } else {
+        alert("Item not found in inventory.");
+      }
 
-  cartList.innerHTML = keys.map(item => {
-    const product = getProduct(item);
-    let details = "";
-    if (product) {
-      const itemCost = product["Selling Cost (QAR)"] * cart[item];
-      totalCost += itemCost;
-      details = `<br>
-        <small>
-          QAR ${product["Selling Cost (QAR)"]} | Shipping: ${product["Shipping Period"]}
-        </small>`;
+      document.getElementById("searchItem").value = "";
     }
-    totalQty += cart[item];
-    return `<li>
-      <span>${item} x ${cart[item]} ${details}</span>
-      <span class="item-controls">
-        <button class="minus" onclick="decrease('${item}')">−</button>
-        <button class="plus" onclick="increase('${item}')">+</button>
-        <button class="remove" onclick="removeItem('${item}')">X</button>
-      </span>
-    </li>`;
-  }).join('');
-
-  totalQtyDiv.textContent = "Total Items: " + totalQty;
-  totalCostDiv.textContent = "Total Cost: QAR " + totalCost.toFixed(2);
-}
-
-function increase(item) { cart[item] += 1; updateCart(); }
-function decrease(item) { if (cart[item] > 1) cart[item] -= 1; else delete cart[item]; updateCart(); }
-function removeItem(item) { delete cart[item]; updateCart(); }
-function updateCart() { localStorage.setItem('cart', JSON.stringify(cart)); renderCart(); }
-function clearCart() { cart = {}; updateCart(); }
-
-function openCheckoutForm() {
-  if (Object.keys(cart).length === 0) { showToast("Your cart is empty!"); return; }
-  document.getElementById('checkoutModal').style.display = 'block';
-}
-function closeCheckoutForm() { document.getElementById('checkoutModal').style.display = 'none'; }
-
-function checkout() {
-  const name = document.getElementById('nameInput').value.trim();
-  const phone = document.getElementById('phoneInput').value.trim();
-  if (!name || !phone) { showToast("Please fill in all fields!"); return; }
-  let cartSummary = "";
-  for (let item in cart) { cartSummary += `${item} x ${cart[item]}\n`; }
-  const templateParams = { name, phone, items: cartSummary, email: "cloudyskyqa@gmail.com" };
-  emailjs.send("service_ezl7f8j", "template_kijmp3l", templateParams)
-    .then(() => { showToast("Email sent successfully!"); clearCart(); closeCheckoutForm(); })
-    .catch(() => showToast("Failed to send email"));
-}
-
-function showToast(msgText) {
-  const msg = document.createElement('div');
-  msg.className = 'toast';
-  msg.textContent = msgText;
-  document.body.appendChild(msg);
-  setTimeout(() => msg.remove(), 2000);
-}
-</script>
+  </script>
 </body>
 </html>
