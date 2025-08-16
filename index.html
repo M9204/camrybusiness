@@ -5,15 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Cart</title>
 
-
 <script 
   src="https://www.paypal.com/sdk/js?client-id=BAABY972pVIpVMiL-wwmXFWw322ufZadHk2WYHt4FZsITUKjQ8E8uZoCxEwyZ-qms7Yx3ZmVqmpWhSJhyQ&components=hosted-buttons&disable-funding=venmo&currency=USD">
 </script>
 
-
-
-
-  
 <style>
   body {
     font-family: "Roboto", "Google Sans", Arial, sans-serif;
@@ -21,7 +16,7 @@
     margin: 0;
     padding: 10px;
     text-align: center;
-    max-width: 420px; /* Force narrow mobile-like width */
+    max-width: 420px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -30,9 +25,9 @@
     color: #333;
     margin-bottom: 8px;
   }
-  #totalQty {
+  #totalQty, #totalCost {
     font-size: 14px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     color: #555;
   }
   #cartList {
@@ -100,7 +95,6 @@
     z-index: 9999;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   }
-  /* Modal styles */
   .modal {
     display: none;
     position: fixed;
@@ -120,39 +114,22 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     font-size: 13px;
   }
-  .modal-content h2 {
-    margin-top: 0;
-    font-size: 14px;
-    color: #333;
-  }
-  .modal-content label {
-    display: block;
-    margin: 6px 0 3px;
-    font-weight: bold;
-    font-size: 12px;
-  }
+  .modal-content h2 { margin-top: 0; font-size: 14px; color: #333; }
+  .modal-content label { display: block; margin: 6px 0 3px; font-weight: bold; font-size: 12px; }
   .modal-content input {
-    width: 100%;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 12px;
+    width: 100%; padding: 5px; border: 1px solid #ccc;
+    border-radius: 4px; font-size: 12px;
   }
-  .modal-actions {
-    margin-top: 10px;
-    text-align: right;
-  }
+  .modal-actions { margin-top: 10px; text-align: right; }
   .modal-actions button {
-    margin-left: 6px;
-    font-size: 12px;
-    padding: 5px 12px;
-    border-radius: 14px;
+    margin-left: 6px; font-size: 12px; padding: 5px 12px; border-radius: 14px;
   }
 </style>
 </head>
 <body>
 <h1>Camry Cart</h1>
 <div id="totalQty">Total Items: 0</div>
+<div id="totalCost">Total Cost: QAR 0</div>
 <ul id="cartList"></ul>
 
 <div class="cart-buttons">
@@ -160,18 +137,12 @@
   <button class="gs-button" onclick="openCheckoutForm()">Checkout</button>
 </div>
 
-
-
 <div id="paypal-container-NR2B8CK2XDEQQ"></div>
 <script>
   paypal.HostedButtons({
     hostedButtonId: "NR2B8CK2XDEQQ",
   }).render("#paypal-container-NR2B8CK2XDEQQ")
 </script>
-
-
-
-  
 
 <!-- Modal -->
 <div id="checkoutModal" class="modal">
@@ -190,94 +161,87 @@
 
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
-(function(){
-  emailjs.init("KL9tzTpfIKMZOOfGi");
-})();
+(function(){ emailjs.init("KL9tzTpfIKMZOOfGi"); })();
 
 let cart = JSON.parse(localStorage.getItem('cart')) || {};
+let products = [];
 
-const urlParams = new URLSearchParams(window.location.search);
-const newItem = urlParams.get('item');
-if (newItem) {
-  if (cart[newItem]) cart[newItem] += 1;
-  else cart[newItem] = 1;
-  localStorage.setItem('cart', JSON.stringify(cart));
-  showToast(newItem + " added to cart");
+// Load JSON product data
+fetch('car_parts.json')
+  .then(r => r.json())
+  .then(data => { products = data; renderCart(); });
+
+// Match product
+function getProduct(itemName) {
+  return products.find(p => p.Item.toLowerCase() === itemName.toLowerCase());
 }
 
 const cartList = document.getElementById('cartList');
 const totalQtyDiv = document.getElementById('totalQty');
+const totalCostDiv = document.getElementById('totalCost');
 
 function renderCart() {
   const keys = Object.keys(cart);
   if (keys.length === 0) {
     cartList.innerHTML = "<li>Cart is empty</li>";
     totalQtyDiv.textContent = "Total Items: 0";
+    totalCostDiv.textContent = "Total Cost: QAR 0";
     return;
   }
 
-  cartList.innerHTML = keys.map(item => 
-    `<li>
-      <span>${item} x ${cart[item]}</span>
+  let totalQty = 0;
+  let totalCost = 0;
+
+  cartList.innerHTML = keys.map(item => {
+    const product = getProduct(item);
+    let details = "";
+    if (product) {
+      const itemCost = product["Selling Cost (QAR)"] * cart[item];
+      totalCost += itemCost;
+      details = `<br>
+        <small>
+          QAR ${product["Selling Cost (QAR)"]} | Shipping: ${product["Shipping Period"]}
+        </small>`;
+    }
+    totalQty += cart[item];
+    return `<li>
+      <span>${item} x ${cart[item]} ${details}</span>
       <span class="item-controls">
         <button class="minus" onclick="decrease('${item}')">−</button>
         <button class="plus" onclick="increase('${item}')">+</button>
         <button class="remove" onclick="removeItem('${item}')">X</button>
       </span>
-    </li>`).join('');
+    </li>`;
+  }).join('');
 
-  const totalQty = keys.reduce((sum, k) => sum + cart[k], 0);
   totalQtyDiv.textContent = "Total Items: " + totalQty;
+  totalCostDiv.textContent = "Total Cost: QAR " + totalCost.toFixed(2);
 }
 
 function increase(item) { cart[item] += 1; updateCart(); }
-function decrease(item) { 
-  if (cart[item] > 1) cart[item] -= 1; 
-  else delete cart[item];
-  updateCart(); 
-}
+function decrease(item) { if (cart[item] > 1) cart[item] -= 1; else delete cart[item]; updateCart(); }
 function removeItem(item) { delete cart[item]; updateCart(); }
-function updateCart() {
-  localStorage.setItem('cart', JSON.stringify(cart));
-  renderCart();
-}
+function updateCart() { localStorage.setItem('cart', JSON.stringify(cart)); renderCart(); }
 function clearCart() { cart = {}; updateCart(); }
+
 function openCheckoutForm() {
-  if (Object.keys(cart).length === 0) {
-    showToast("Your cart is empty!");
-    return;
-  }
+  if (Object.keys(cart).length === 0) { showToast("Your cart is empty!"); return; }
   document.getElementById('checkoutModal').style.display = 'block';
 }
-function closeCheckoutForm() {
-  document.getElementById('checkoutModal').style.display = 'none';
-}
+function closeCheckoutForm() { document.getElementById('checkoutModal').style.display = 'none'; }
+
 function checkout() {
   const name = document.getElementById('nameInput').value.trim();
   const phone = document.getElementById('phoneInput').value.trim();
-  if (!name || !phone) {
-    showToast("Please fill in all fields!");
-    return;
-  }
+  if (!name || !phone) { showToast("Please fill in all fields!"); return; }
   let cartSummary = "";
-  for (let item in cart) {
-    cartSummary += `${item} x ${cart[item]}\n`;
-  }
-  const templateParams = {
-    name: name,
-    phone: phone,
-    items: cartSummary,
-    email: "cloudyskyqa@gmail.com"
-  };
+  for (let item in cart) { cartSummary += `${item} x ${cart[item]}\n`; }
+  const templateParams = { name, phone, items: cartSummary, email: "cloudyskyqa@gmail.com" };
   emailjs.send("service_ezl7f8j", "template_kijmp3l", templateParams)
-    .then(function() {
-        showToast("Email sent successfully!");
-        clearCart();
-        closeCheckoutForm();
-    }, function() {
-        showToast("Failed to send email");
-    });
+    .then(() => { showToast("Email sent successfully!"); clearCart(); closeCheckoutForm(); })
+    .catch(() => showToast("Failed to send email"));
 }
+
 function showToast(msgText) {
   const msg = document.createElement('div');
   msg.className = 'toast';
@@ -285,7 +249,6 @@ function showToast(msgText) {
   document.body.appendChild(msg);
   setTimeout(() => msg.remove(), 2000);
 }
-renderCart();
 </script>
 </body>
 </html>
