@@ -3,8 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Camry Cart</title>
+<title>My Cart</title>
 
+<!-- PayPal SDK -->
+<script 
+  src="https://www.paypal.com/sdk/js?client-id=BAABY972pVIpVMiL-wwmXFWw322ufZadHk2WYHt4FZsITUKjQ8E8uZoCxEwyZ-qms7Yx3ZmVqmpWhSJhyQ&components=hosted-buttons&disable-funding=venmo&currency=USD">
+</script>
 
 <style>
   body {
@@ -18,84 +22,51 @@
     margin-right: auto;
   }
   h1 { font-size: 18px; color: #333; margin-bottom: 8px; }
-  #totalQty, #totalCost { font-size: 14px; margin-bottom: 8px; color: #555; }
+  #totalQty, #totalCost { font-size: 22px; margin-bottom: 12px; color: #d1242f; }
   #cartList { list-style: none; padding: 0; margin: 0 auto 15px auto; text-align: left; }
   #cartList li {
-    background: #fff;
-    border-radius: 8px;
-    margin: 6px 0;
-    padding: 8px 12px;
-    font-size: 13px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    background: #fff; border-radius: 8px; margin: 6px 0;
+    padding: 8px 12px; font-size: 13px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    display: flex; justify-content: space-between; align-items: center;
   }
   .item-controls button {
-    margin: 0 3px;
-    border: none;
-    border-radius: 8px;
-    padding: 3px 6px;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 12px;
+    margin: 0 3px; border: none; border-radius: 8px;
+    padding: 3px 6px; font-weight: bold; cursor: pointer; font-size: 12px;
   }
   .plus { background-color: #1a73e8; color: #fff; }
   .minus { background-color: #666; color: #fff; }
   .remove { background-color: #e53935; color: #fff; }
-  .cart-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 6px;
-    margin-bottom: 15px;
-  }
+  .cart-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 15px; }
   .gs-button {
     font-family: "Roboto", "Google Sans", Arial, sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    color: #fff;
-    background-color: #1a73e8;
-    border: none;
-    border-radius: 18px;
-    padding: 6px 14px;
-    cursor: pointer;
+    font-size: 13px; font-weight: 500; color: #fff; background-color: #1a73e8;
+    border: none; border-radius: 18px; padding: 6px 14px; cursor: pointer;
     box-shadow: 0 1px 1px rgba(0,0,0,0.2);
     transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
   }
   .gs-button:hover { background-color: #1669c1; }
   .gs-button:active { background-color: #145ab8; transform: scale(0.98); }
   .toast {
-    position: fixed;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1a73e8;
-    color: #fff;
-    padding: 6px 10px;
-    border-radius: 15px;
-    font-size: 12px;
-    z-index: 9999;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
+    background: #1a73e8; color: #fff; padding: 6px 10px; border-radius: 15px;
+    font-size: 12px; z-index: 9999; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   }
-  /* Modal */
-  .modal { display: none; position: fixed; z-index: 10000; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,0.4);}
+  .modal {
+    display: none; position: fixed; z-index: 10000;
+    left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4);
+  }
   .modal-content {
-    background: #fff;
-    margin: 25% auto;
-    padding: 12px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 320px;
-    text-align: left;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    background-color: #fff; margin: 25% auto; padding: 12px; border-radius: 8px;
+    width: 90%; max-width: 320px; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     font-size: 13px;
   }
-  .modal-content h2 { margin-top:0; font-size:14px; color:#333;}
-  .modal-content label { display:block; margin:6px 0 3px; font-weight:bold; font-size:12px;}
-  .modal-content input { width:100%; padding:5px; border:1px solid #ccc; border-radius:4px; font-size:12px;}
-  .modal-actions { margin-top:10px; text-align:right;}
-  .modal-actions button { margin-left:6px; font-size:12px; padding:5px 12px; border-radius:14px;}
+  .modal-content h2 { margin-top: 0; font-size: 14px; color: #333; }
+  .modal-content label { display: block; margin: 6px 0 3px; font-weight: bold; font-size: 12px; }
+  .modal-content input {
+    width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;
+  }
+  .modal-actions { margin-top: 10px; text-align: right; }
+  .modal-actions button { margin-left: 6px; font-size: 12px; padding: 5px 12px; border-radius: 14px; }
 </style>
 </head>
 <body>
@@ -110,7 +81,12 @@
   <button class="gs-button" onclick="openCheckoutForm()">Checkout</button>
 </div>
 
-<!-- Modal -->
+<div id="paypal-container-NR2B8CK2XDEQQ"></div>
+<script>
+  paypal.HostedButtons({ hostedButtonId: "NR2B8CK2XDEQQ" }).render("#paypal-container-NR2B8CK2XDEQQ");
+</script>
+
+<!-- Checkout Modal -->
 <div id="checkoutModal" class="modal">
   <div class="modal-content">
     <h2>Checkout Information</h2>
@@ -127,113 +103,124 @@
 
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
-  emailjs.init("KL9tzTpfIKMZOOfGi");
+emailjs.init("KL9tzTpfIKMZOOfGi");
 
-  // --- Cart & Products ---
-  let cart = JSON.parse(localStorage.getItem('cart')) || {};
-  let products = [];
-  const cartList = document.getElementById('cartList');
-  const totalQtyDiv = document.getElementById('totalQty');
-  const totalCostDiv = document.getElementById('totalCost');
+// --- Cart initialization ---
+let cart = JSON.parse(localStorage.getItem('cart')) || {};
+const cartList = document.getElementById('cartList');
+const totalQtyDiv = document.getElementById('totalQty');
+let products = [];
 
-  // Fetch products JSON
-  fetch('car_parts.json')
-    .then(res => res.json())
-    .then(data => {
-      products = data;
-      handleURLItem(); // Add item from URL param
-      renderCart();
-    })
-    .catch(err => console.error(err));
+// --- Fetch products ---
+fetch('car_parts.json')
+  .then(res => res.json())
+  .then(data => {
+    products = data;
+    handleURLItem(); // add item from URL param if any
+    renderCart();
+  })
+  .catch(err => console.error(err));
 
-  // Case-insensitive search
-  function getProduct(name) {
-    return products.find(p => p.Item.toLowerCase() === name.toLowerCase());
-  }
+// --- Case-insensitive search ---
+function getProduct(name) {
+  return products.find(p => p.Item.toLowerCase() === name.toLowerCase());
+}
 
-  // Handle item from URL param
-  function handleURLItem() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const newItem = urlParams.get('item');
-    if(newItem) {
-      const itemName = decodeURIComponent(newItem);
-      if(cart[itemName]) cart[itemName] +=1;
-      else cart[itemName]=1;
-      localStorage.setItem('cart', JSON.stringify(cart));
-      showToast(itemName + " added to cart");
-    }
-  }
-
-  // Render cart
-  function renderCart() {
-    const keys = Object.keys(cart);
-    if(keys.length===0){
-      cartList.innerHTML="<li>Cart is empty</li>";
-      totalQtyDiv.textContent="Total Items: 0";
-      totalCostDiv.textContent="Total Cost: QAR 0.00";
-      return;
-    }
-
-    let totalQty = 0;
-    let totalCost = 0;
-
-    cartList.innerHTML = keys.map(item=>{
-      const product = getProduct(item);
-      let details="";
-      if(product){
-        const itemCost = product["Selling Cost (QAR)"] * cart[item];
-        totalCost += itemCost;
-        details=`<br><small>QAR ${product["Selling Cost (QAR)"]} | Shipping: ${product["Shipping Period"]}</small>`;
-      }
-      totalQty += cart[item];
-      return `<li>
-        <span>${item} x ${cart[item]} ${details}</span>
-        <span class="item-controls">
-          <button class="minus" onclick="decrease('${item}')">−</button>
-          <button class="plus" onclick="increase('${item}')">+</button>
-          <button class="remove" onclick="removeItem('${item}')">X</button>
-        </span>
-      </li>`;
-    }).join('');
-
-    totalQtyDiv.textContent="Total Items: "+totalQty;
-    totalCostDiv.textContent="Total Cost: QAR "+totalCost.toFixed(2);
+// --- Handle item from URL ---
+function handleURLItem() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const newItem = urlParams.get('item');
+  if (newItem) {
+    const itemName = decodeURIComponent(newItem);
+    if(cart[itemName]) cart[itemName] += 1;
+    else cart[itemName] = 1;
     localStorage.setItem('cart', JSON.stringify(cart));
+    showToast(itemName + " added to cart");
+
+    // Remove 'item' param to prevent re-adding on refresh
+    urlParams.delete('item');
+    const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+    window.history.replaceState({}, document.title, newUrl);
+  }
+}
+
+// --- Render cart ---
+function renderCart() {
+  const keys = Object.keys(cart);
+  if(keys.length === 0){
+    cartList.innerHTML = "<li>Cart is empty</li>";
+    totalQtyDiv.textContent = "Total Items: 0";
+    document.getElementById('totalCost').textContent = "Total Cost: QAR 0.00";
+    return;
   }
 
-  // Cart controls
-  function increase(item){ cart[item]+=1; renderCart(); }
-  function decrease(item){ if(cart[item]>1) cart[item]-=1; else delete cart[item]; renderCart(); }
-  function removeItem(item){ delete cart[item]; renderCart(); }
-  function clearCart(){ cart={}; renderCart(); }
+  let totalQty = 0;
+  let totalCost = 0;
 
-  // Checkout modal
-  function openCheckoutForm(){
-    if(Object.keys(cart).length===0){ showToast("Your cart is empty!"); return;}
-    document.getElementById('checkoutModal').style.display='block';
-  }
-  function closeCheckoutForm(){ document.getElementById('checkoutModal').style.display='none'; }
+  cartList.innerHTML = keys.map(item => {
+    const product = getProduct(item);
+    let details = "";
+    if(product){
+      const itemCost = product["Selling Cost (QAR)"] * cart[item];
+      totalCost += itemCost;
+      details = `<br><small>QAR ${product["Selling Cost (QAR)"]} | Shipping: ${product["Shipping Period"]}</small>`;
+    }
+    totalQty += cart[item];
+    return `<li>
+      <span>${item} x ${cart[item]} ${details}</span>
+      <span class="item-controls">
+        <button class="minus" onclick="decrease('${item}')">−</button>
+        <button class="plus" onclick="increase('${item}')">+</button>
+        <button class="remove" onclick="removeItem('${item}')">X</button>
+      </span>
+    </li>`;
+  }).join('');
 
-  function checkout(){
-    const name=document.getElementById('nameInput').value.trim();
-    const phone=document.getElementById('phoneInput').value.trim();
-    if(!name || !phone){ showToast("Please fill in all fields!"); return;}
-    let cartSummary="";
-    for(let item in cart){ cartSummary+=`${item} x ${cart[item]}\n`; }
-    const templateParams = { name, phone, items: cartSummary, email:"cloudyskyqa@gmail.com" };
-    emailjs.send("service_ezl7f8j","template_kijmp3l",templateParams)
-      .then(()=>{ showToast("Order made successfully!"); clearCart(); closeCheckoutForm(); },
-            ()=>{ showToast("Failed to send email"); });
-  }
+  totalQtyDiv.textContent = "Total Items: " + totalQty;
+  document.getElementById('totalCost').textContent = "Total Cost: QAR " + totalCost.toFixed(2);
+}
 
-  function showToast(msg){
-    const div=document.createElement('div');
-    div.className='toast';
-    div.textContent=msg;
-    document.body.appendChild(div);
-    setTimeout(()=>div.remove(),2000);
-  }
+// --- Cart operations ---
+function increase(item){ cart[item] += 1; updateCart(); }
+function decrease(item){ if(cart[item]>1) cart[item]-=1; else delete cart[item]; updateCart(); }
+function removeItem(item){ delete cart[item]; updateCart(); }
+function updateCart(){ localStorage.setItem('cart', JSON.stringify(cart)); renderCart(); }
+function clearCart(){ cart={}; localStorage.removeItem('cart'); renderCart(); }
 
+// --- Checkout modal ---
+function openCheckoutForm(){
+  if(Object.keys(cart).length === 0){ showToast("Your cart is empty!"); return; }
+  document.getElementById('checkoutModal').style.display='block';
+}
+function closeCheckoutForm(){ document.getElementById('checkoutModal').style.display='none'; }
+
+// --- Checkout email ---
+function checkout(){
+  const name = document.getElementById('nameInput').value.trim();
+  const phone = document.getElementById('phoneInput').value.trim();
+  if(!name || !phone){ showToast("Please fill in all fields!"); return; }
+
+  let cartSummary = "";
+  for(let item in cart){ cartSummary += `${item} x ${cart[item]}\n`; }
+
+  const templateParams = { name, phone, items: cartSummary, email: "cloudyskyqa@gmail.com" };
+
+  emailjs.send("service_ezl7f8j", "template_kijmp3l", templateParams)
+    .then(()=>{ showToast("Email sent successfully!"); clearCart(); closeCheckoutForm(); },
+          ()=>{ showToast("Failed to send email"); });
+}
+
+// --- Toast notification ---
+function showToast(msg){
+  const msgDiv = document.createElement('div');
+  msgDiv.className='toast'; msgDiv.textContent=msg;
+  document.body.appendChild(msgDiv);
+  setTimeout(()=>msgDiv.remove(), 2000);
+}
+
+// --- Initial render ---
+renderCart();
 </script>
+
 </body>
 </html>
