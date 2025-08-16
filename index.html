@@ -153,9 +153,9 @@ function renderCart() {
     const product = getProduct(item);
     let details = "";
     if(product){
-      const itemCost = product["Selling Cost (QAR)"] * cart[item];
+      const itemCost = product["Cost"] * cart[item];
       totalCost += itemCost;
-      details = `<br><small>QAR ${product["Selling Cost (QAR)"]} | Shipping: ${product["Shipping Period"]}</small>`;
+      details = `<br><small>QAR ${product["Cost"]} | Shipping: ${product["Shipping Period"]}</small>`;
     }
     totalQty += cart[item];
     return `<li>
