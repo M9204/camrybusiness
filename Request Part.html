@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request Part</title>
+
+<style>
+  body {
+    font-family: "Roboto", "Google Sans", Arial, sans-serif;
+    background: #f1f3f4;
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  h1 { font-size: 18px; color: #333; margin-bottom: 8px; }
+  form { background: #fff; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); text-align: left; font-size: 13px; }
+  label { display: block; margin: 6px 0 3px; font-weight: bold; font-size: 12px; }
+  input, textarea { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; margin-bottom: 8px; }
+  textarea { resize: vertical; }
+  .gs-button {
+    font-family: "Roboto", "Google Sans", Arial, sans-serif;
+    font-size: 13px; font-weight: 500; color: #fff; background-color: #1a73e8;
+    border: none; border-radius: 18px; padding: 6px 14px; cursor: pointer;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+    transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+  }
+  .gs-button:hover { background-color: #1669c1; }
+  .gs-button:active { background-color: #145ab8; transform: scale(0.98); }
+  .toast {
+    position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
+    background: #1a73e8; color: #fff; padding: 6px 10px; border-radius: 15px;
+    font-size: 12px; z-index: 9999; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+</style>
+</head>
+<body>
+
+<h1>Request a Part</h1>
+
+<form id="requestForm">
+  <label for="partName">Part Name:</label>
+  <input type="text" id="partName" placeholder="Enter part name" required>
+
+  <label for="description">Description / Usage:</label>
+  <textarea id="description" placeholder="Describe the part and its usage" rows="4" required></textarea>
+
+  <label for="userName">Your Name:</label>
+  <input type="text" id="userName" placeholder="Your name" required>
+
+  <label for="contact">Contact Info:</label>
+  <input type="text" id="contact" placeholder="Phone or email" required>
+
+  <button type="submit" class="gs-button">Submit Request</button>
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+emailjs.init("KL9tzTpfIKMZOOfGi"); // same user ID
+
+const form = document.getElementById('requestForm');
+
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const partName = document.getElementById('partName').value.trim();
+  const description = document.getElementById('description').value.trim();
+  const userName = document.getElementById('userName').value.trim();
+  const contact = document.getElementById('contact').value.trim();
+
+  if (!partName || !description || !userName || !contact) {
+    showToast("Please fill in all fields!");
+    return;
+  }
+
+  const templateParams = {
+    part_name: partName,
+    description: description,
+    user_name: userName,
+    contact: contact,
+    email: "cloudyskyqa@gmail.com"
+  };
+
+  emailjs.send("service_ezl7f8j", "template_request_part", templateParams) // different template
+    .then(() => {
+      showToast("Request sent successfully!");
+      form.reset();
+    }, () => {
+      showToast("Failed to send request.");
+    });
+});
+
+function showToast(msg) {
+  const msgDiv = document.createElement('div');
+  msgDiv.className = 'toast';
+  msgDiv.textContent = msg;
+  document.body.appendChild(msgDiv);
+  setTimeout(() => msgDiv.remove(), 2000);
+}
+</script>
+
+</body>
+</html>
